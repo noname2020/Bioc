@@ -73,12 +73,12 @@ public class SentenceSplit {
     	//    System.exit(-1);
     	//}
 
-        SentenceSplit split = new SentenceSplit();
+        //SentenceSplit split = new SentenceSplit();
         //split.split(args[0], args[1]);
         
-        String inXML = "/home/zhu/.gvfs/sftp on shannon/home/dongqing/data/bioc/articles/22792398.xml";
-        String outXML = "/home/zhu/.gvfs/sftp on shannon/home/dongqing/data/bioc/out.xml";
-        split.split(inXML, outXML);
+//        String inXML = "";
+//        String outXML = "";
+//        split.split(inXML, outXML);
     }
 
     public void split(String inXML, String outXML)

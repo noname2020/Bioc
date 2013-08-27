@@ -10,6 +10,7 @@ public class SentProcessor {
 	 * punctuation.
 	 */
 	public static String cleanSent(String text) {
+		System.out.println(text);
 		String[] terms = text.split(" ");
 		StringBuffer cleanText = new StringBuffer(200);
 		for (String term : terms) {

@@ -22,4 +22,12 @@ public class Stopper {
 	public HashSet<String> getStopwords() {
 		return this.stopwords;
 	}
+	
+	public boolean stop(String word) {
+		word = word.toLowerCase();
+		if (stopwords.contains(word)) {
+			return true;
+		}
+		return false;
+	}
 }

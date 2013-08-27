@@ -3,6 +3,7 @@ package classification;
 import java.util.HashSet;
 
 import type.Query;
+import type.Sentence;
 
 public class SimpleClassifier extends Classifier {
 	private HashSet<String> keptPsgTypes;

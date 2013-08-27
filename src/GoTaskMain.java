@@ -22,8 +22,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLStreamException;
+
 
 import annotation.Annotator;
 import annotation.SimpleAnnotator;
@@ -47,19 +50,22 @@ import utility.PsgToSentXML;
 
 
 public class GoTaskMain {
-	private static String dataPath = System.getProperty("user.dir") + "/data/";//"/home/zhu/workspace/Bioc/data/";
+	private static String dataPath = System.getProperty("user.dir") + "/data/";
 	private static String workingsetPath = dataPath + "workingset.txt";
 	private static String triplePath = dataPath + "triples.unique";
-	///home/zhu/.gvfs/sftp on shannon/home/dongqing/work/bioc/testquery.param";
 	
 	private static HashSet<String> workingset;
 	private static HashMap<String, ArrayList<Triple>> pmidToTriples;
 	private static SimpleClassifier classifier;
 	private static Annotator annotator;
+	private static PsgToSentXML convertor;
 	
 	private static int numTopPmid = 100;
 	private static int numTopGo = 50;
-		
+
+    private static Pattern pattern = Pattern.compile(".*\\((\\d+)\\)");
+    private static Pattern patternMultiple = Pattern.compile(".*\\(([\\d;]+)\\)");
+    
 	/**
 	 * Initialization
 	 * 1. Create classifier
@@ -76,6 +82,7 @@ public class GoTaskMain {
 		classifier = new SimpleClassifier();
 		annotator = new SimpleAnnotator();
 		annotator.setPmidToTriples(pmidToTriples);
+		convertor = new PsgToSentXML();
 	}
 	
 	/**
@@ -91,7 +98,7 @@ public class GoTaskMain {
 		}
 		System.out.println("# of queries: " + queries.size());
 		ArrayList<Query> validQueries = classifier.filterQueries(queries);
-		System.out.println("# of queries: " + validQueries.size());
+		System.out.println("# of queries after filtering: " + validQueries.size());
 		printInfo("Done");
 		return validQueries;
 	}
@@ -102,11 +109,11 @@ public class GoTaskMain {
 		//printInfo("Done");
 	}
 	
-	public static void retrieve(Collection<Query> queries, String paramPath, String resultPath) throws IOException {
+	public static void retrieve(Collection<Query> queries, String paramPath, String resultPath, boolean rewrite) throws IOException {
 		printInfo("Formulating queries ");
-		IndriMakeQuery qlmodel = new LMDirichlet(100, 2500, queries);
-		qlmodel.addIndex("/home/dongqing/index/pmc-stemming/");
-		qlmodel.addIndex("/home/dongqing/index/bioasq_train_indri/");
+		IndriMakeQuery qlmodel = new LMDirichlet(100, 500, queries);
+		qlmodel.addIndex("~/index/pmc-stemming/");
+		qlmodel.addIndex("~/index/bioasq_train_indri/");
 		for (Query query : qlmodel.getQueries()) {
 			query.setWorkingset(workingset);
 			/*
@@ -120,13 +127,9 @@ public class GoTaskMain {
 		}		
 		System.out.println("# of queries: " + qlmodel.getQueries().size());		
 		
-		
-		//System.out.println("Writing to " + paramPath);
-		//qlmodel.writeParam(paramPath);
-		if (! checkExistence(resultPath)) {
+		if (! checkExistence(paramPath) || rewrite) {
 			System.out.println("Writing to " + paramPath);
 			qlmodel.writeParam(paramPath);
-			
 		} else {
 			System.out.println("File already exists: " + paramPath);
 		}
@@ -135,11 +138,11 @@ public class GoTaskMain {
 		
 		printInfo("Running queries ");
 		
-//		if (! checkExistence(resultPath)) {
-//			// TODO: IndriRunQuery
-//		} else {
-//			System.out.println("File already exists: " + resultPath);
-//		}
+		if (! checkExistence(resultPath)) {
+			// TODO: IndriRunQuery
+		} else {
+			System.out.println("File already exists: " + resultPath);
+		}
 		
 		printInfo("Done");
 	}
@@ -196,6 +199,127 @@ public class GoTaskMain {
 		classEvaluator.evaluate(Parser.getAnnotations(goldPath), queries);
 		printInfo("Done");
 	}
+
+	public static void runTest(String pmid) throws IOException {
+		// Split and output XML files that contains sentences
+		ArrayList<Query> queries = new ArrayList<Query>();
+		String inXML = System.getProperty("user.dir") + "/data/articles/" + pmid + ".xml";
+		String outXML = System.getProperty("user.dir") + "/data/articles_sent/" + pmid + ".xml";
+		if (! checkExistence(outXML)) {
+			try {
+				convertor.split(inXML, outXML);
+			} catch (XMLStreamException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}				
+			/* Alternative: get sentences out of the convertor directly
+	        sentences = convertor.getSentences();
+	    	for (int i = 0; i < sentences.size(); i++) {
+	    		sentence = sentences.get(i);
+	    		System.out.print("psgOff:" + sentence.getPsgOffset() + " off:" + sentence.getOffset() + " len:" + sentence.getLength() + " ");
+	    		System.out.println(sentence.getText());
+	    	}
+	    	*/
+		}
+    	read(outXML, queries);
+		queries = filter(queries);
+		
+	    String paramPath = dataPath + "queries/" + pmid + ".param";
+	    String resultPath = dataPath + "results/" + pmid + ".result";
+
+		retrieve(queries, paramPath, resultPath, false);
+		
+		//annotate(queries, resultPath, annotator, pmid);
+
+	}
+	
+	public static void runTrain(String pmid, PrintStream goldOutTrain) throws IOException {
+		HashMap<Query, Query> queryMap;
+		ArrayList<ScorePR> allScores = new ArrayList<ScorePR>();
+		ArrayList<Sentence> sentences;
+		PsgToSentXML convertor = new PsgToSentXML();
+		Sentence sentence;
+	    String paramPath = dataPath + "queries/" + pmid + ".param";
+	    String resultPath = dataPath + "results/" + pmid + ".result";	
+	    String goldPath = dataPath + "goldstandard/annotation_" + pmid + ".xml";
+	    
+	    Matcher matcher;
+	    String geneID = "";
+		HashSet<String> goldSet = new HashSet<String>();
+
+	    ArrayList<Annotation> annots = Parser.getAnnotations(goldPath);	    
+		String gold;
+		if (annots.size() == 0) System.out.print(pmid + " has no annotations!");
+		//goldOutTrain.println(pmid);
+		for (Annotation annot : annots) {
+			//gold = annot.getOffset() + " " + annot.getGene() + " " + annot.getGo().getGoId() + " " + annot.getGo().getEvidence();
+			matcher = pattern.matcher( annot.getGene());
+		    if (matcher.find( )) {
+		    	geneID = matcher.group(1);
+		    } else {
+		         //System.out.println("NO MATCH:" + annot.getGene());
+		        
+		    	matcher = patternMultiple.matcher(annot.getGene());
+		    	if (matcher.find( )) {
+				    	geneID = matcher.group(1);
+		    	} else {
+		    		//TODO
+		    		//System.out.println("Not matched: " + pmid + " " + annot.getGene());
+		    		//System.exit(0);
+		    		continue;
+		    	}
+		    	String[] geneIDs = geneID.split(";");
+		    	for (String id : geneIDs) {
+		    		gold = pmid + " " + id + " " + annot.getGo().getGoId();
+		    		if (goldSet.contains(gold)) continue;
+		    		goldSet.add(gold);
+		    		//System.out.println(gold);
+		    		goldOutTrain.println(gold);
+		    	}
+		    	continue;
+		    	//System.exit(0);
+		    	// 22253607 843513;840320;829480;815862 GO:0009742
+		    }
+		    
+		    gold = pmid + " " + geneID + " " + annot.getGo().getGoId();
+		    if (goldSet.contains(gold)) continue;
+		    goldSet.add(gold);
+		    //System.out.println(gold);
+			goldOutTrain.println(gold);
+			
+		}
+			
+		//System.exit(0);
+		//ArrayList<Query> queries = Parser.getUniqueQueryFromAnnotation(annots);
+		//Parser.makeTokenSentences(queries);
+		
+
+		//retrieve(queries, paramPath, resultPath, false);
+		
+		//annotate(queries, resultPath, annotator, pmid);
+		
+	
+		
+		
+		
+		//allScores.addAll(evalRanking(queries, goldPath));
+		
+		//System.out.println("Processing: " + goldPath + " ... ");
+		
+		//evalClassification(goldPath, queries);
+//		PrintStream outStream = new PrintStream("/home/zhu/workspace/Bioc/data/forpanther/" + pmid + ".goldannot");
+//		String temp;
+//		for (Annotation annot : annots) {
+//			temp = annot.getOffset() + " " + annot.getGene() + " " + annot.getGo().getGoId() + " " + annot.getGo().getEvidence();
+//			outStream.println(temp);
+//			System.out.println(temp);
+//		}			
+//		outStream.close();
+		
+	}
 	
 	
 	public static void main(String[] args) throws IOException, XMLStreamException
@@ -209,118 +333,54 @@ public class GoTaskMain {
 		///projects/ontoBioT/data/script/GOPMID.stat 
 		///projects/ontoBioT/data/script/addGOPath.out
 		
-		
-/**
- GeneID.2GOSLIM
-GeneID\tPANTHERSLIM
-PANTHER knowledge base
-Predicted GOSLIM function for the corresponding gene
-ForDongqing.final
-iProclass
-GOSLIMID, GOID, PMID
-Training
-Step 1: Given Gene, we have a list of GOSLIM
-For that GOSLIM, we have a list of PMIDs
-I may only need to search for GO Terms in the above PMIDs
-GIven a gene, from Panther, we got GOSLIM terms
-GOPMID.stat
-addGOPath.out
 
- */
-		
-		initialize(); // Initialization
+		String mode = "train";
+		PrintStream goldOutTrain = new PrintStream(dataPath + "gold.train");
 
 		
+		initialize(); // Initialization		
 		Parser.printInfo(false);
 		annotator.printInfo(false);
 		Validation.printInfo(false);
 		
+
+
 		//for (numTopGo = 10; numTopGo <= 100; numTopGo += 10) {
 		//for (numTopPmid = 10; numTopPmid <= 100; numTopPmid += 10) {
-			
 		
-		File articleDir = new File(dataPath + "articles_sent/"); 
-		String articlePath, resultPath, paramPath, pmid;
-		ArrayList<Query> queries = null;
+		String articlePath;
 		String[] parts, items;
-		String goldPath;		
-		ArrayList<Annotation> annots;
-		HashMap<Query, Query> queryMap;
-		ArrayList<ScorePR> allScores = new ArrayList<ScorePR>();
-		
-		
+		ArrayList<String> pmids = new ArrayList<String>();
+		String pmid;
+		File articleDir = new File(dataPath + "articles/");	
 		for (File articleFile : articleDir.listFiles()) {
 			articlePath = articleFile.getPath();
-			
 			parts = articlePath.split("/");
 			items = parts[parts.length - 1].split("\\.");
-			
-			if (!items[1].equals("xml")) {
-				continue;
-			}
-			
+			if (!items[1].equals("xml")) continue;
 			pmid = items[0];
-		
-//			if (!"22016430".equals(pmid)) { //19074149
-//				continue;
-//			}
+			pmids.add(pmid);
 			
-			paramPath = dataPath + "queries/" + pmid + ".param";
-			
-	        //split.split(args[0], args[1]);
-	        
-	        String inXML = "/home/zhu/.gvfs/sftp on shannon/home/dongqing/data/bioc/articles/22792398.xml";
-	        String outXML = System.getProperty("user.dir") + "/data/out.xml";//"/home/zhu/.gvfs/sftp on shannon/home/dongqing/data/bioc/out.xml";
-	    	
-	        PsgToSentXML convertor = new PsgToSentXML();
-	        convertor.split(inXML, outXML);
-	        ArrayList<Sentence> sentences = convertor.getSentences();
-	        Sentence sentence;
-	    	for (int i = 0; i < sentences.size(); i++) {
-	    		sentence = sentences.get(i);
-	    		sentence.setOffset(sentence.getOffset());
-	    		System.out.print("psgOff:" + sentence.getPsgOffset() + " off:" + sentence.getOffset() + " len:" + sentence.getLength() + " ");
-	    		System.out.println(sentence.getText());
-	    	}
-	    	
-	    	
-			//paramPath = "/home/zhu/.gvfs/sftp on shannon/home/dongqing/work/bioc/"+ "queries/" + pmid + ".param"; 
-			
-			resultPath  = dataPath + "results/" + pmid + ".result";
-			goldPath = dataPath + "goldstandard/annotation_" + pmid + ".xml";
-			
-			//System.out.println("Processing: " + goldPath + " ... ");
-			annots = Parser.getAnnotations(goldPath);
-			
-//			for (Annotation annot : annots) {
-//				System.out.println("Out Offset: " + annot.getOffset());
-//			}
-//			System.exit(0);
-			PrintStream outStream = new PrintStream("/home/zhu/workspace/Bioc/data/forpanther/" + pmid + ".goldannot");
-			String temp;
-			for (Annotation annot : annots) {
-				temp = annot.getOffset() + " " + annot.getGene() + " " + annot.getGo().getGoId() + " " + annot.getGo().getEvidence();
-				outStream.println(temp);
-				System.out.println(temp);
+			//if (!"22156165".equals(pmid)) continue; //19074149 12213836 22792398
+			if (mode.equals("test")) { 
+				runTest(pmid);
+			} else {
+				System.out.println("Generating gold standards for " + pmid);
+				runTrain(pmid, goldOutTrain);
+				
 			}
-			//System.exit(0);
-			outStream.close();
-			//queries = Parser.getUniqueQueryFromAnnotation(annots);
-			//Parser.makeTokenSentences(queries);
-			//retrieve(queries, paramPath, resultPath);
-			
-			
-			queries = Parser.getQueryFromAnnotation(annots);
-			annotate(queries, resultPath, annotator, pmid);
-			allScores.addAll(evalRanking(queries, goldPath));
-			
-			//System.exit(0);
 		}
+		
+		System.out.println("Done");
+		goldOutTrain.close();
+
+
+
 		
 		//System.exit(0);
 		
-		double p = 0.0, r = 0.0;
-		int n = 0;
+		//double p = 0.0, r = 0.0;
+		//int n = 0;
 //		for (ScorePR score : allScores) {
 //			System.out.println("Precision: " + score.getPrecision() + "\tRecall: " + score.getRecall());
 //			p += score.getPrecision();

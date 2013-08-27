@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import type.Query;
+import type.Sentence;
 
 public abstract class Classifier {	
 	abstract public boolean classifyQuery(Query query);

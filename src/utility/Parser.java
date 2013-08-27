@@ -291,7 +291,7 @@ public class Parser {
         			annotation.setGo(go);
         			annotation.setGene(gene);
         			annotations.add(annotation);
-        			System.out.println("Offset: " + annotation.getOffset());
+        			//System.out.println("Annotation Offset: " + annotation.getOffset());
         			/*
         			System.out.println("====================================================");
             		System.out.println("PsgOffset: " + annotation.getPsgOffset());

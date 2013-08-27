@@ -1,6 +1,6 @@
 package type;
 
-public class Annotation extends Sentence{
+public class Annotation extends Sentence {
 	private String type;
 	
 			
