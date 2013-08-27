@@ -62,9 +62,9 @@ public class GoTaskMain {
 	
 	private static int numTopPmid = 100;
 	private static int numTopGo = 50;
-
-    private static Pattern pattern = Pattern.compile(".*\\((\\d+)\\)");
-    private static Pattern patternMultiple = Pattern.compile(".*\\(([\\d;]+)\\)");
+	
+	private static Pattern pattern = Pattern.compile(".*\\((\\d+)\\)");
+	private static Pattern patternMultiple = Pattern.compile(".*\\(([\\d;]+)\\)");
     
 	/**
 	 * Initialization

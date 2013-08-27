@@ -119,9 +119,9 @@ public class TestSplitter {
     	TestSplitter split = new TestSplitter();
         //split.split(args[0], args[1]);
         
-        String inXML = "/home/zhu/.gvfs/sftp on shannon/home/dongqing/data/bioc/articles/22792398.xml";
-        String outXML = System.getProperty("user.dir") + "/data/out.xml";//"/home/zhu/.gvfs/sftp on shannon/home/dongqing/data/bioc/out.xml";
-        split.split(inXML, outXML);
+//        String inXML = "";
+//        String outXML = System.getProperty("user.dir") + "/data/out.xml";
+//        split.split(inXML, outXML);
     }
 }
 
