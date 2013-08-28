@@ -65,12 +65,15 @@ public class GoTaskMain {
 	private static SimpleClassifier classifier;
 	private static Annotator annotator;
 	private static PsgToSentXML convertor;
+	private static HashMap<String, HashSet<String>> slimToGopmids;
+
 	
 	private static int numTopPmid = 100;
 	private static int numTopGo = 50;
 	
 	private static Pattern pattern = Pattern.compile(".*\\((\\d+)\\)");
 	private static Pattern patternMultiple = Pattern.compile(".*\\(([\\d;]+)\\)");
+	
     
 	/**
 	 * Initialization
@@ -89,6 +92,7 @@ public class GoTaskMain {
 		annotator = new SimpleAnnotator();
 		annotator.setPmidToTriples(pmidToTriples);
 		convertor = new PsgToSentXML();
+		slimToGopmids = Mapping.getSlimToGopmids(slimpmidPath);
 	}
 	
 	/**
@@ -133,7 +137,7 @@ public class GoTaskMain {
 		//}		
 		System.out.println("# of queries: " + qlmodel.getQueries().size());		
 		
-		if (! checkExistence(paramPath) || rewrite) {
+		if ((!checkExistence(paramPath)) || rewrite) {
 			System.out.println("Writing to " + paramPath);
 			qlmodel.writeParam(paramPath);
 		} else {
@@ -144,7 +148,7 @@ public class GoTaskMain {
 		
 		printInfo("Running queries ");
 		
-		if (! checkExistence(resultPath)) {
+		if ((!checkExistence(resultPath)) || rewrite) {
 			// TODO: IndriRunQuery
 		} else {
 			System.out.println("File already exists: " + resultPath);
@@ -193,12 +197,20 @@ public class GoTaskMain {
 	}
 	
 	public static HashSet<String> getReducedWorkingset(HashSet<String> gopmids) {
-		for(String s : gopmids) {
-			//System.out.println(s);
+		HashSet<String> reducedWorkingset = new HashSet<String>();
+		String[] items;
+		String pmcpmid, pmid;
+		for(String gopmid : gopmids) {
+			items = gopmid.split(" ");
+			pmid = items[1];
+			pmcpmid = "/home/dongqing/data/pmc/fulltext-pmid/" + pmid;
+			if (workingset.contains(pmcpmid)) reducedWorkingset.add(pmid);
+			else reducedWorkingset.add(pmid);
+			//System.out.println(pmid);
 		}
-		System.out.println();
-		System.exit(0);
-		return null;
+		//.out.println();
+		//System.exit(0);
+		return reducedWorkingset;
 	}
 	
 	public static void readFromClassification(String pmid, ArrayList<Query> queries) throws IOException {
@@ -210,34 +222,47 @@ public class GoTaskMain {
 		String[] items;
 		HashSet<String> identifiedGeneSet = new HashSet<String>();
 		System.out.println(pmid);
+		String signature, queryId;
+		HashSet<String> signatureSet = new HashSet<String>();
+		int n = 1;
 		while ((line = reader.readLine()) != null) {
 			items = line.split("\\|\\|");
 			geneId = items[1];
 			//goId = items[2];
 			sentence = items[3];
+			signature = geneId + " " + sentence;
+			
+			if (signatureSet.contains(signature)) continue;
+			signatureSet.add(signature);			
+			
 			query = new Query();
 			identifiedGeneSet.add(geneId);
+			query.setId(n + "-" + geneId);
 			query.setGene(geneId);
 			query.setText(sentence);
-			System.out.println(geneId + "\t\t" + sentence);
 			queries.add(query);
+			n++;
 		}
 		
 		
-		geneToGopmids = Mapping.makeGeneToPmids(identifiedGeneSet, slimpmidPath, geneslimPath);
+		geneToGopmids = Mapping.makeGeneToPmids(identifiedGeneSet, slimToGopmids, geneslimPath);
 		
 		for (int i = 0; i < queries.size(); i++) {
 			query = queries.get(i);
 			geneId = query.getGene();
+			//System.out.println(geneId);
 			if ( !geneToGopmids.containsKey(query.getGene()) ) {
 				query.setWorkingset(workingset);
 			} else {
-				System.out.println(geneId);
 				query.setWorkingset(getReducedWorkingset(geneToGopmids.get(geneId)));
 			}
+			System.out.println("queryId: " + query.getId() + "\tWorkingsetLength: " + query.getWorkingset().size() + "\t query:" + query.getText());
 		}
 		
 		
+		Parser.makeTokenSentences(queries);
+		
+	
 //		for (String key : geneToGopmids.keySet()) {
 //			System.out.println(key + " " + geneToGopmids.get(key));
 //		}
@@ -258,21 +283,13 @@ public class GoTaskMain {
 		printInfo("Done");
 	}
 
-	public static void runTest(String pmid) throws IOException {
+	public static void runTest(String pmid) throws IOException, XMLStreamException {
 		// Split and output XML files that contains sentences
 		ArrayList<Query> queries = new ArrayList<Query>();
 		String inXML = System.getProperty("user.dir") + "/data/articles/" + pmid + ".xml";
 		String outXML = System.getProperty("user.dir") + "/data/articles_sent/" + pmid + ".xml";
 		if (! checkExistence(outXML)) {
-			try {
-				convertor.split(inXML, outXML);
-			} catch (XMLStreamException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}				
+			convertor.split(inXML, outXML);
 			/* Alternative: get sentences out of the convertor directly
 	        sentences = convertor.getSentences();
 	    	for (int i = 0; i < sentences.size(); i++) {
@@ -282,17 +299,16 @@ public class GoTaskMain {
 	    	}
 	    	*/
 		}
-		
+		System.out.println("Formulating queries ... ");
 		readFromClassification(pmid, queries);
-		
     	//read(outXML, queries);
 		//queries = filter(queries);
 		
 	    String paramPath = dataPath + "queries/" + pmid + ".param";
 	    String resultPath = dataPath + "results/" + pmid + ".result";
 
-		//retrieve(queries, paramPath, resultPath, false);
-		
+		retrieve(queries, paramPath, resultPath, true);
+		//System.exit(0);
 		//annotate(queries, resultPath, annotator, pmid);
 
 	}
@@ -353,7 +369,6 @@ public class GoTaskMain {
 		    goldSet.add(gold);
 		    //System.out.println(gold);
 			goldOutTrain.println(gold);
-			
 		}
 		
 		goldOutTrain.close();

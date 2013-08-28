@@ -29,16 +29,13 @@ public class Mapping {
 		return pmidToTriples;
 	}
 	
-	public static HashMap<String, HashSet<String>> makeGeneToPmids (HashSet<String> identifiedGeneSet, String slimpmidPath, String pantherFile) throws IOException {
+	public static HashMap<String, HashSet<String>> getSlimToGopmids(String slimpmidPath) throws IOException {
 		HashMap<String, HashSet<String>> slimToGopmids = new HashMap<String, HashSet<String>>();
-		HashMap<String, HashSet<String>> geneToGopmids = new HashMap<String, HashSet<String>>();
-		BufferedReader reader;
-		String line, gene, slim, pmid, go, gopmid;
-		String[] items;
-		HashSet<String> gopmids, slims;
-		
 		System.out.println("Reading " + slimpmidPath);
-		reader = new BufferedReader(new FileReader(slimpmidPath));
+		BufferedReader reader = new BufferedReader(new FileReader(slimpmidPath));
+		String[] items;
+		String slim, go, pmid, gopmid, line;
+		HashSet<String> gopmids;
 		while ((line = reader.readLine()) != null) {
 			items = line.split("\t");
 			slim = items[1];
@@ -55,6 +52,18 @@ public class Mapping {
 		}
 		reader.close();
 		System.out.println("Done\n");
+		return slimToGopmids;
+	}
+	
+	public static HashMap<String, HashSet<String>> makeGeneToPmids (HashSet<String> identifiedGeneSet, HashMap<String, HashSet<String>> slimToGopmids, String pantherFile) throws IOException {
+		HashMap<String, HashSet<String>> geneToGopmids = new HashMap<String, HashSet<String>>();
+		BufferedReader reader;
+		String line, gene, slim, pmid, go, gopmid;
+		String[] items;
+		HashSet<String> gopmids, slims;
+		
+
+
 		
 		System.out.println("Reading " + pantherFile);	
 		reader = new BufferedReader(new FileReader(pantherFile));
