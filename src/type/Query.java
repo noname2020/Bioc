@@ -10,6 +10,7 @@ public class Query extends Sentence implements Comparable {
 	private HashSet<String> workingset = new HashSet<String>();	
 	private ArrayList<GeneOntology> topGoes;
 	private double mmrScore = 0.0;
+	private String goId;
 	
 	public Query(int psgOffset, int offset, String text, String id, HashSet<String> workingset) {
 		super(psgOffset, offset, text);
@@ -127,5 +128,13 @@ public class Query extends Sentence implements Comparable {
 		for (Map.Entry<Query, Integer> entry: map.entrySet()) {
 			System.out.println(entry.getKey().getOffset()+ " " + entry.getKey().getLength() + " " + entry.getValue());
 		}
+	}
+
+	public String getGoId() {
+		return goId;
+	}
+
+	public void setGoId(String goId) {
+		this.goId = goId;
 	}
 }

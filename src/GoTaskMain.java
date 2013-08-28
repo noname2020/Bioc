@@ -5,7 +5,10 @@
  */
 
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Array;
@@ -53,9 +56,12 @@ public class GoTaskMain {
 	private static String dataPath = System.getProperty("user.dir") + "/data/";
 	private static String workingsetPath = dataPath + "workingset.txt";
 	private static String triplePath = dataPath + "triples.unique";
+	private static String geneslimPath = dataPath + "GeneID.2GOSLIM";
+	private static String slimpmidPath = dataPath + "slimpmid.txt";
 	
 	private static HashSet<String> workingset;
 	private static HashMap<String, ArrayList<Triple>> pmidToTriples;
+	private static HashMap<String, HashSet<String>> geneToGopmids;
 	private static SimpleClassifier classifier;
 	private static Annotator annotator;
 	private static PsgToSentXML convertor;
@@ -114,8 +120,8 @@ public class GoTaskMain {
 		IndriMakeQuery qlmodel = new LMDirichlet(100, 500, queries);
 		qlmodel.addIndex("~/index/pmc-stemming/");
 		qlmodel.addIndex("~/index/bioasq_train_indri/");
-		for (Query query : qlmodel.getQueries()) {
-			query.setWorkingset(workingset);
+		//for (Query query : qlmodel.getQueries()) {
+			//query.setWorkingset(workingset);
 			/*
 			System.out.println("Passage offset: " + query.getPsgOffset());
 			System.out.println("Sentence offset: " + query.getOffset());
@@ -124,7 +130,7 @@ public class GoTaskMain {
 			System.out.println("Text length: " + query.getLength());
 			System.out.println();
 			*/
-		}		
+		//}		
 		System.out.println("# of queries: " + qlmodel.getQueries().size());		
 		
 		if (! checkExistence(paramPath) || rewrite) {
@@ -186,6 +192,58 @@ public class GoTaskMain {
 		printInfo("Done");
 	}
 	
+	public static HashSet<String> getReducedWorkingset(HashSet<String> gopmids) {
+		for(String s : gopmids) {
+			//System.out.println(s);
+		}
+		System.out.println();
+		System.exit(0);
+		return null;
+	}
+	
+	public static void readFromClassification(String pmid, ArrayList<Query> queries) throws IOException {
+		String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
+		HashMap<String, String> pmidToLines = new HashMap<String, String>();
+		String line, geneId, goId, sentence;
+		BufferedReader reader = new BufferedReader(new FileReader(goldOut));
+		Query query;
+		String[] items;
+		HashSet<String> identifiedGeneSet = new HashSet<String>();
+		System.out.println(pmid);
+		while ((line = reader.readLine()) != null) {
+			items = line.split("\\|\\|");
+			geneId = items[1];
+			//goId = items[2];
+			sentence = items[3];
+			query = new Query();
+			identifiedGeneSet.add(geneId);
+			query.setGene(geneId);
+			query.setText(sentence);
+			System.out.println(geneId + "\t\t" + sentence);
+			queries.add(query);
+		}
+		
+		
+		geneToGopmids = Mapping.makeGeneToPmids(identifiedGeneSet, slimpmidPath, geneslimPath);
+		
+		for (int i = 0; i < queries.size(); i++) {
+			query = queries.get(i);
+			geneId = query.getGene();
+			if ( !geneToGopmids.containsKey(query.getGene()) ) {
+				query.setWorkingset(workingset);
+			} else {
+				System.out.println(geneId);
+				query.setWorkingset(getReducedWorkingset(geneToGopmids.get(geneId)));
+			}
+		}
+		
+		
+//		for (String key : geneToGopmids.keySet()) {
+//			System.out.println(key + " " + geneToGopmids.get(key));
+//		}
+//		System.exit(0);
+	}
+	
 	public static ArrayList<ScorePR> evalRanking(ArrayList<Query> queries, String goldPath) {
 		//printInfo("Evaluating results");
 		ArrayList<ScorePR> scores = Validation.getEvals(queries, goldPath);
@@ -224,19 +282,22 @@ public class GoTaskMain {
 	    	}
 	    	*/
 		}
-    	read(outXML, queries);
-		queries = filter(queries);
+		
+		readFromClassification(pmid, queries);
+		
+    	//read(outXML, queries);
+		//queries = filter(queries);
 		
 	    String paramPath = dataPath + "queries/" + pmid + ".param";
 	    String resultPath = dataPath + "results/" + pmid + ".result";
 
-		retrieve(queries, paramPath, resultPath, false);
+		//retrieve(queries, paramPath, resultPath, false);
 		
 		//annotate(queries, resultPath, annotator, pmid);
 
 	}
 	
-	public static void runTrain(String pmid, PrintStream goldOutTrain) throws IOException {
+	public static void runTrain(String pmid) throws IOException {
 		HashMap<Query, Query> queryMap;
 		ArrayList<ScorePR> allScores = new ArrayList<ScorePR>();
 		ArrayList<Sentence> sentences;
@@ -245,6 +306,8 @@ public class GoTaskMain {
 	    String paramPath = dataPath + "queries/" + pmid + ".param";
 	    String resultPath = dataPath + "results/" + pmid + ".result";	
 	    String goldPath = dataPath + "goldstandard/annotation_" + pmid + ".xml";
+	    String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
+	    PrintStream goldOutTrain = new PrintStream(goldOut);
 	    
 	    Matcher matcher;
 	    String geneID = "";
@@ -256,7 +319,7 @@ public class GoTaskMain {
 		//goldOutTrain.println(pmid);
 		for (Annotation annot : annots) {
 			//gold = annot.getOffset() + " " + annot.getGene() + " " + annot.getGo().getGoId() + " " + annot.getGo().getEvidence();
-			matcher = pattern.matcher( annot.getGene());
+			matcher = pattern.matcher(annot.getGene());
 		    if (matcher.find( )) {
 		    	geneID = matcher.group(1);
 		    } else {
@@ -273,10 +336,10 @@ public class GoTaskMain {
 		    	}
 		    	String[] geneIDs = geneID.split(";");
 		    	for (String id : geneIDs) {
-		    		gold = pmid + " " + id + " " + annot.getGo().getGoId();
+		    		gold = pmid + "||" + id + "||" + annot.getGo().getGoId() + "||" + annot.getText();
 		    		if (goldSet.contains(gold)) continue;
+		    		System.out.println(pmid + "||" + id + "||" + annot.getGo().getGoId() + "||" + annot.getText());
 		    		goldSet.add(gold);
-		    		//System.out.println(gold);
 		    		goldOutTrain.println(gold);
 		    	}
 		    	continue;
@@ -284,14 +347,17 @@ public class GoTaskMain {
 		    	// 22253607 843513;840320;829480;815862 GO:0009742
 		    }
 		    
-		    gold = pmid + " " + geneID + " " + annot.getGo().getGoId();
+		    gold = pmid + "||" + geneID + "||" + annot.getGo().getGoId() + "||" + annot.getText();
 		    if (goldSet.contains(gold)) continue;
+		    System.out.println(pmid + "||" + geneID + "||" + annot.getGo().getGoId() + "||" + annot.getText());
 		    goldSet.add(gold);
 		    //System.out.println(gold);
 			goldOutTrain.println(gold);
 			
 		}
-			
+		
+		goldOutTrain.close();
+		System.out.println("Saved to " + goldOut);
 		//System.exit(0);
 		//ArrayList<Query> queries = Parser.getUniqueQueryFromAnnotation(annots);
 		//Parser.makeTokenSentences(queries);
@@ -334,24 +400,19 @@ public class GoTaskMain {
 		///projects/ontoBioT/data/script/addGOPath.out
 		
 
-		String mode = "train";
-		PrintStream goldOutTrain = new PrintStream(dataPath + "gold.train");
 
+		String mode = "test";
 		
 		initialize(); // Initialization		
 		Parser.printInfo(false);
 		annotator.printInfo(false);
 		Validation.printInfo(false);
-		
-
 
 		//for (numTopGo = 10; numTopGo <= 100; numTopGo += 10) {
 		//for (numTopPmid = 10; numTopPmid <= 100; numTopPmid += 10) {
 		
-		String articlePath;
+		String articlePath, pmid;
 		String[] parts, items;
-		ArrayList<String> pmids = new ArrayList<String>();
-		String pmid;
 		File articleDir = new File(dataPath + "articles/");	
 		for (File articleFile : articleDir.listFiles()) {
 			articlePath = articleFile.getPath();
@@ -359,20 +420,17 @@ public class GoTaskMain {
 			items = parts[parts.length - 1].split("\\.");
 			if (!items[1].equals("xml")) continue;
 			pmid = items[0];
-			pmids.add(pmid);
-			
+	
 			//if (!"22156165".equals(pmid)) continue; //19074149 12213836 22792398
-			if (mode.equals("test")) { 
+			if (mode.equals("test")) {
 				runTest(pmid);
 			} else {
 				System.out.println("Generating gold standards for " + pmid);
-				runTrain(pmid, goldOutTrain);
-				
+				runTrain(pmid);
+				System.out.println();
 			}
 		}
 		
-		System.out.println("Done");
-		goldOutTrain.close();
 
 
 
