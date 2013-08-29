@@ -442,7 +442,7 @@ public class GoTaskMain {
 			if (!items[1].equals("xml")) continue;
 			pmid = items[0];
 	
-			if (!"21911818".equals(pmid) || ("22870182".equals(pmid))) continue; //19074149 12213836 22792398
+			if ("21911818".equals(pmid) || ("22870182".equals(pmid))) continue; //19074149 12213836 22792398
 			if (mode.equals("test")) {
 				runTest(pmid);
 			} else {
