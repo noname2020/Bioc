@@ -11,6 +11,7 @@ public class Stopper {
 	
 	public Stopper() throws IOException {
 		URL url = getClass().getResource("stopwords.txt");
+		//System.out.println(url.getPath());
 		@SuppressWarnings("resource")
 		BufferedReader reader = new BufferedReader(new FileReader(url.getPath()));
 		String line;
