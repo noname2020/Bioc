@@ -5,7 +5,7 @@ JAVA = java
 
 #JAVAC = ~/java/jdk1.7.0_11/bin/javac
 #JAVA = ~/java/jdk1.7.0_11/bin/java
-JAVA_FLAGS = -classpath "$(Bioc)/class:lib/commons-compress-1.4.1.jar:lib/commons-io-2.4.jar:lib/json-simple-1.1.jar:lib/lingpipe-4.1.0.jar:external/BioC_Java_1.0/lib/bioc.jar:external/BioC_Java_1.0/lib/biolemmatizer-core-1.1-jar-with-dependencies.jar:junit-4.1.1.jar:stax-utils.jar:stax2-api-3.1.1.jar:woodstox-core-asl-4.15.jar:xmlunit-1.4.jar"
+JAVA_FLAGS = -classpath "$(Bioc)/class:src/utility/stopwords.txt:lib/commons-compress-1.4.1.jar:lib/commons-io-2.4.jar:lib/json-simple-1.1.jar:lib/lingpipe-4.1.0.jar:external/BioC_Java_1.0/lib/bioc.jar:external/BioC_Java_1.0/lib/biolemmatizer-core-1.1-jar-with-dependencies.jar:junit-4.1.1.jar:stax-utils.jar:stax2-api-3.1.1.jar:woodstox-core-asl-4.15.jar:xmlunit-1.4.jar"
 JAVAC_FLAGS = \
 $(JAVA_FLAGS) \
 -sourcepath "$(Bioc)/src:$(Bioc)/autosrc" \
