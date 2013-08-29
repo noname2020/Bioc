@@ -129,8 +129,10 @@ public class GoTaskMain {
 	public static void retrieve(Collection<Query> queries, String paramPath, String resultPath, boolean rewrite) throws IOException {
 		printInfo("Formulating queries ");
 		IndriMakeQuery qlmodel = new LMDirichlet(50, 500, queries);
-		qlmodel.addIndex("~/index/pmc-stemming/");
-		qlmodel.addIndex("~/index/bioasq_train_indri/");
+		qlmodel.addIndex("../index/pmc-stemming/");
+		qlmodel.addIndex("../index/bioasq_train_indri/");
+		//qlmodel.addIndex("~/index/pmc-stemming/");
+		//qlmodel.addIndex("~/index/bioasq_train_indri/");
 		//for (Query query : qlmodel.getQueries()) {
 			//query.setWorkingset(workingset);
 			/*
