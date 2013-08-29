@@ -85,14 +85,21 @@ public class GoTaskMain {
 	 * @throws IOException
 	 */
 	
-	public static void initialize() throws IOException {
-		pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
-		workingset = Parser.getSameWorkingset(workingsetPath);
-		classifier = new SimpleClassifier();
-		annotator = new SimpleAnnotator();
-		annotator.setPmidToTriples(pmidToTriples);
-		convertor = new PsgToSentXML();
-		slimToGopmids = Mapping.getSlimToGopmids(slimpmidPath);
+	public static void initialize(String mode) throws IOException {
+		if (mode.equals("test")) {
+			pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
+			workingset = Parser.getSameWorkingset(workingsetPath);
+			classifier = new SimpleClassifier();
+			annotator = new SimpleAnnotator();
+			annotator.setPmidToTriples(pmidToTriples);
+			slimToGopmids = Mapping.getSlimToGopmids(slimpmidPath);
+			Parser.printInfo(false);
+			annotator.printInfo(false);
+			Validation.printInfo(false);
+		} else {
+			convertor = new PsgToSentXML();
+		}
+		
 	}
 	
 	/**
@@ -121,7 +128,7 @@ public class GoTaskMain {
 	
 	public static void retrieve(Collection<Query> queries, String paramPath, String resultPath, boolean rewrite) throws IOException {
 		printInfo("Formulating queries ");
-		IndriMakeQuery qlmodel = new LMDirichlet(100, 500, queries);
+		IndriMakeQuery qlmodel = new LMDirichlet(50, 500, queries);
 		qlmodel.addIndex("~/index/pmc-stemming/");
 		qlmodel.addIndex("~/index/bioasq_train_indri/");
 		//for (Query query : qlmodel.getQueries()) {
@@ -414,14 +421,13 @@ public class GoTaskMain {
 		///projects/ontoBioT/data/script/GOPMID.stat 
 		///projects/ontoBioT/data/script/addGOPath.out
 		
-
-
-		String mode = "test";
 		
-		initialize(); // Initialization		
-		Parser.printInfo(false);
-		annotator.printInfo(false);
-		Validation.printInfo(false);
+
+		String mode = args[0]; //"test";
+		System.out.println(mode);
+		//System.exit(0);
+		initialize(mode); // Initialization		
+
 
 		//for (numTopGo = 10; numTopGo <= 100; numTopGo += 10) {
 		//for (numTopPmid = 10; numTopPmid <= 100; numTopPmid += 10) {
