@@ -216,6 +216,7 @@ public class Parser {
 
     			//System.out.println(annotationElement.getAttribute("id"));
     			go = new GeneOntology();
+    			gene = "";
     			infoNodes = annotationElement.getElementsByTagName("infon");
     			for (int j = 0; j < infoNodes.getLength(); j++) {
     				infoNode = infoNodes.item(j);
@@ -238,27 +239,37 @@ public class Parser {
     				}
     			}
     			
-    			if (go.getGoId().equals("")) {
-    				if (print) {
-    					System.out.println("abnormal annotation @ " + psgOffset);
-    					System.out.println("skipping ... ");
-    				}
-    				//System.exit(0);
-    				break;
-    			}
+    			if (gene.length() == 0) continue;
+	    		annotation = new Annotation();
+	    		annotation.setId(annotationElement.getAttribute("id"));				
+	    		annotation.setPsgType(psgType);
+	    		annotation.setPsgOffset(psgOffset);
+	    		annotation.setGo(go);
+	    		annotation.setGene(gene);
+	    		annotation.setText(text);
+	    		annotations.add(annotation);    			
     			
-    			locationNodes = annotationElement.getElementsByTagName("location");
-    			
-    			
-    			for (int j = 0; j < locationNodes.getLength(); j++) {
-    				annotation = new Annotation();
-    				locationNode = locationNodes.item(j);
-    				locationElement = (Element) locationNode;
-    				offset = Integer.parseInt(locationElement.getAttribute("offset"));
-    				length = Integer.parseInt(locationElement.getAttribute("length"));
-
-        			//System.out.println(offset);
-        			//System.out.println(text);
+//    			if (go.getGoId().equals("")) {
+//    				if (print) {
+//    					System.out.println("abnormal annotation @ " + psgOffset);
+//    					System.out.println("skipping ... ");
+//    				}
+//    				//System.exit(0);
+//    				break;
+//    			}
+//    			
+//    			locationNodes = annotationElement.getElementsByTagName("location");
+//    			
+//    			
+//    			for (int j = 0; j < locationNodes.getLength(); j++) {
+//    				annotation = new Annotation();
+//    				locationNode = locationNodes.item(j);
+//    				locationElement = (Element) locationNode;
+//    				offset = Integer.parseInt(locationElement.getAttribute("offset"));
+//    				length = Integer.parseInt(locationElement.getAttribute("length"));
+//
+//        			//System.out.println(offset);
+//        			//System.out.println(text);
 //        			if (length != text.length()) {
 //        				if (print) {
 //        					System.out.println(length + " " + text.length());
@@ -281,36 +292,38 @@ public class Parser {
 //        				//annotation.setSentence(text.substring(textPosition, textPosition + length));
 //        				annotation.setSentence(text.substring(textPosition, textPosition + text.length()));
 //        			}
-        			
-        			annotation.setId(annotationElement.getAttribute("id"));
-    				annotation.setOffset(offset);
-    				annotation.setLength(length);				
-        			annotation.setPsgType(psgType);
-        			annotation.setPsgOffset(psgOffset);
-        			textPosition += length;
-        			annotation.setGo(go);
-        			annotation.setGene(gene);
-        			annotations.add(annotation);
-        			//System.out.println("Annotation Offset: " + annotation.getOffset());
-        			/*
-        			System.out.println("====================================================");
-            		System.out.println("PsgOffset: " + annotation.getPsgOffset());
-            		System.out.println("PsgType: " + annotation.getPsgType());
-            		System.out.println("Annotation_id: " + annotation.getId());
-            		System.out.println("Gene: " + annotation.getGene());
-            		System.out.println("go-term: " + annotation.getGo().getGoTerm() + "|" + annotation.getGo().getGoId());
-            		System.out.println("goevidence: " + annotation.getGo().getEvidence());
-            		System.out.println("Type: " + annotation.getType());
-            		System.out.println("Length: " + annotation.getLength());
-            		System.out.println("Offset: " + annotation.getOffset());
-            		System.out.println("Text: " + annotation.getSentence());
-        			System.out.println("====================================================");
-    				*/
-        			
-        			
-        			
-        			break;
-    			}   			
+//        			
+//        			annotation.setId(annotationElement.getAttribute("id"));
+//    				annotation.setOffset(offset);
+//    				annotation.setLength(length);				
+//        			annotation.setPsgType(psgType);
+//        			annotation.setPsgOffset(psgOffset);
+//        			textPosition += length;
+//        			annotation.setGo(go);
+//        			annotation.setGene(gene);
+//        			annotations.add(annotation);
+//        			//System.out.println("Annotation Offset: " + annotation.getOffset());
+//        			/*
+//        			System.out.println("====================================================");
+//            		System.out.println("PsgOffset: " + annotation.getPsgOffset());
+//            		System.out.println("PsgType: " + annotation.getPsgType());
+//            		System.out.println("Annotation_id: " + annotation.getId());
+//            		System.out.println("Gene: " + annotation.getGene());
+//            		System.out.println("go-term: " + annotation.getGo().getGoTerm() + "|" + annotation.getGo().getGoId());
+//            		System.out.println("goevidence: " + annotation.getGo().getEvidence());
+//            		System.out.println("Type: " + annotation.getType());
+//            		System.out.println("Length: " + annotation.getLength());
+//            		System.out.println("Offset: " + annotation.getOffset());
+//            		System.out.println("Text: " + annotation.getSentence());
+//        			System.out.println("====================================================");
+//    				*/
+//        			
+//        			
+//        			
+//        			break;
+//        			
+//    			}  
+    		
     		}
 		}
 		
