@@ -97,7 +97,7 @@ public class PsgToSentXML {
         //split.split(args[0], args[1]);
     	PsgToSentXML convertor = new PsgToSentXML();
         String inXML = "/home/zhu/.gvfs/sftp on shannon/home/dongqing/data/bioc/articles/22792398.xml";
-        String outXML = System.getProperty("user.dir") + "/data/out.xml";//"/home/zhu/.gvfs/sftp on shannon/home/dongqing/data/bioc/out.xml";
+        String outXML = System.getProperty("user.dir") + "/data/out.xml";
         convertor.split(inXML, outXML);
         ArrayList<Sentence> sentences = convertor.getSentences();
         Sentence sentence;
