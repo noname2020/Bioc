@@ -96,9 +96,8 @@ public class GoTaskMain {
 			Parser.printInfo(false);
 			annotator.printInfo(false);
 			Validation.printInfo(false);
-		} else {
-			convertor = new PsgToSentXML();
-		}
+		} 
+		convertor = new PsgToSentXML();
 		
 	}
 	
@@ -295,7 +294,7 @@ public class GoTaskMain {
 		ArrayList<Query> queries = new ArrayList<Query>();
 		String inXML = System.getProperty("user.dir") + "/data/articles/" + pmid + ".xml";
 		String outXML = System.getProperty("user.dir") + "/data/articles_sent/" + pmid + ".xml";
-		System.out.println("inXML: "+inXML + " outXML"+outXML);
+		//System.out.println("inXML: "+inXML + " outXML:"+outXML);
 		if (! checkExistence(outXML)) {
 			convertor.split(inXML, outXML);
 			/* Alternative: get sentences out of the convertor directly
