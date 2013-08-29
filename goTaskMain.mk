@@ -5,7 +5,7 @@ JAVA = java
 
 #JAVAC = ~/java/jdk1.7.0_11/bin/javac
 #JAVA = ~/java/jdk1.7.0_11/bin/java
-JAVA_FLAGS = -classpath "$(Bioc)/class:lib/commons-compress-1.4.1.jar:lib/json-simple-1.1.jar:lib/commons-io-2.4.jar:lib/lingpipe-4.1.0.jar:external/BioC_Java_1.0/lib/bioc.jar:external/BioC_Java_1.0/lib/biolemmatizer-core-1.1-jar-with-dependencies.jar:external/BioC_Java_1.0/lib/junit-4.1.1.jar:external/BioC_Java_1.0/lib/hamcrest-core-1.3.jar:external/BioC_Java_1.0/lib/stax-utils.jar:external/BioC_Java_1.0/lib/stax2-api-3.1.1.jar:external/BioC_Java_1.0/lib/woodstox-core-asl-4.15.jar:external/BioC_Java_1.0/lib/xmlunit-1.4.jar"
+JAVA_FLAGS = -classpath "$(Bioc)/class:lib/commons-lang3-3.1.jar:lib/commons-compress-1.4.1.jar:lib/json-simple-1.1.jar:lib/commons-io-2.4.jar:lib/lingpipe-4.1.0.jar:external/BioC_Java_1.0/lib/bioc.jar:external/BioC_Java_1.0/lib/biolemmatizer-core-1.1-jar-with-dependencies.jar:external/BioC_Java_1.0/lib/junit-4.1.1.jar:external/BioC_Java_1.0/lib/hamcrest-core-1.3.jar:external/BioC_Java_1.0/lib/stax-utils.jar:external/BioC_Java_1.0/lib/stax2-api-3.1.1.jar:external/BioC_Java_1.0/lib/woodstox-core-asl-4.15.jar:external/BioC_Java_1.0/lib/xmlunit-1.4.jar"
 JAVAC_FLAGS = \
 $(JAVA_FLAGS) \
 -sourcepath "$(Bioc)/src:$(Bioc)/autosrc" \
