@@ -96,8 +96,10 @@ public class GoTaskMain {
 			Parser.printInfo(false);
 			annotator.printInfo(false);
 			Validation.printInfo(false);
+		} else {
+			convertor = new PsgToSentXML();
 		}
-		convertor = new PsgToSentXML();
+		
 	}
 	
 	/**
