@@ -49,6 +49,7 @@ import type.Sentence;
 import type.Triple;
 import utility.Mapping;
 import utility.Parser;
+import utility.PlatformDetection;
 import utility.PsgToSentXML;
 
 
@@ -73,7 +74,7 @@ public class GoTaskMain {
 	
 	private static Pattern pattern = Pattern.compile(".*\\((\\d+)\\)");
 	private static Pattern patternMultiple = Pattern.compile(".*\\(([\\d;]+)\\)");
-	
+	private static PlatformDetection platformDetect;
     
 	/**
 	 * Initialization
@@ -98,7 +99,7 @@ public class GoTaskMain {
 			Validation.printInfo(false);
 		} 
 		convertor = new PsgToSentXML();
-		
+		platformDetect = new PlatformDetection();
 	}
 	
 	/**
@@ -306,6 +307,13 @@ public class GoTaskMain {
 	    	}
 	    	*/
 		}
+		//the reasons that I add the following line is that we have to run our code in two machines: one is in local (say, mac) and the second is on linux. 
+		//for some reason, checkExistence(outXML) doesn't work in linux server. Then, we have run them on local machine and then copy results on linux
+		//then, checkExistence(xml) would be skipped in linux. But we do not want to run the following steps on local since it would need to run in parallel in larger server.
+		if(!platformDetect.getOs().equals(platformDetect.OS_LINUX)){
+			return;
+		}
+		
 		System.out.println("Formulating queries ... ");
 		readFromClassification(pmid, queries);
     	//read(outXML, queries);
