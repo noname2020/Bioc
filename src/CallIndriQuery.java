@@ -19,6 +19,7 @@ public class CallIndriQuery {
 		// print out STDOUT
 		BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 		String line = br.readLine();
+		System.out.println(line);
 		while (line != null) {
 			System.out.println(line);
 			line = br.readLine();
