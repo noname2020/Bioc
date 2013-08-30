@@ -28,10 +28,11 @@ endif
 ### note: the model file name is changed to MedTagger_model_third
 all: class link-resources
 	$(JAVAC) $(JAVAC_FLAGS) `find src -name '*.java'`
-	$(JAVA) -Xmx2g $(JAVA_FLAGS) CallIndriQuery data/queries/23840591.param
-#	for subdir in data/queries/*; do \
-#		$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) CallIndriQuery ${subdir} ; \
-#	done
+	for subdir in data/queries/*; do \
+		$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) CallIndriQuery ${subdir} ; \
+	done
+
+#	$(JAVA) -Xmx2g $(JAVA_FLAGS) CallIndriQuery data/queries/23840591.param
 #///Users/m048100/Documents/i2b2/i2b2Challenge2010/Data/release3_merged/ldaModels/i2b22010_txt.uniNorm_eventStr-final_alpha=0.25_beta=0.1_k=100.phi
 #///Users/m048100/Documents/i2b2/i2b2Challenge2010/Data/release3_merged/ldaModels/aspects.json.i2b22010_txt.uniNorm_eventStr-final_6.phi.global /Users/m048100/Documents/i2b2/i2b2Challenge2010/Data/release3_merged/GoldStdsvm_features uniNorm+eventStr train
 
