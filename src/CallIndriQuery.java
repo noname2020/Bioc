@@ -53,6 +53,7 @@ public class CallIndriQuery {
 		String pmid = args[0].substring(args[0].lastIndexOf("/")+1,args[0].indexOf("param")-1);
 		Runtime runtime = Runtime.getRuntime();
 		String makeCom = "IndriRunQuery "+args[0]+" > data/results"+pmid+".result"; 
+		System.out.println(makeCom);
 		CallIndriQuery.compileScripts(runtime, makeCom);
 	}
 
