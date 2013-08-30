@@ -19,6 +19,7 @@ public class CallIndriQuery {
 		// print out STDOUT
 		BufferedReader br = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 		String line = br.readLine();
+		System.out.println(line);
 		while (line != null) {
 			System.out.println(line);
 			line = br.readLine();
@@ -50,10 +51,13 @@ public class CallIndriQuery {
 	 */
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		String pmid = args[0].substring(0,args[0].indexOf("param")-1);
+		String pmid = args[0].substring(args[0].lastIndexOf("/")+1,args[0].indexOf("param")-1);
 		Runtime runtime = Runtime.getRuntime();
-		String makeCom = "IndriRunQuery data/queries/"+args[0]+" > data/results"+pmid+".result"; 
-		CallIndriQuery.compileScripts(runtime, makeCom);
+		String makeCom = "IndriRunQuery "+args[0]+" > data/results/"+pmid+".result"; 
+		System.out.println(makeCom);
+		Runtime rt = Runtime.getRuntime();
+		Process pr = rt.exec(makeCom);
+		//CallIndriQuery.compileScripts(runtime, makeCom);
 	}
 
 }
