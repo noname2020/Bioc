@@ -1,6 +1,4 @@
-IndriRunQuery data/queries/22701670.param data/results/22701670.result 
-IndriRunQuery data/queries/21778179.param data/results/21778179.result 
-IndriRunQuery data/queries/19152507.param data/results/19152507.result 
+"IndriRunQuery data/queries/22701670.param > data/results/22701670.result" "IndriRunQuery data/queries/21778179.param > data/results/21778179.result" "IndriRunQuery data/queries/19152507.param > data/results/19152507.result" 
 IndriRunQuery data/queries/22253727.param data/results/22253727.result 
 IndriRunQuery data/queries/20693409.param data/results/20693409.result 
 IndriRunQuery data/queries/22912598.param data/results/22912598.result 
