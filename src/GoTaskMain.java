@@ -69,8 +69,8 @@ public class GoTaskMain {
 	private static HashMap<String, HashSet<String>> slimToGopmids;
 
 	
-	private static int numTopPmid = 100;
-	private static int numTopGo = 50;
+	private static int numTopPmid = 20;
+	private static int numTopGo = 5;
 	
 	private static Pattern pattern = Pattern.compile(".*\\((\\d+)\\)");
 	private static Pattern patternMultiple = Pattern.compile(".*\\(([\\d;]+)\\)");
@@ -87,7 +87,7 @@ public class GoTaskMain {
 	 */
 	
 	public static void initialize(String mode) throws IOException {
-		if (mode.equals("test")) {
+		if (!mode.equals("train")) {
 			pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
 			workingset = Parser.getSameWorkingset(workingsetPath);
 			classifier = new SimpleClassifier();
@@ -120,9 +120,44 @@ public class GoTaskMain {
 		return validQueries;
 	}
 	
-	public static void annotate(ArrayList<Query> queries, String resultPath, Annotator annotator, String pmid) throws IOException {
+	public static void annotate(String pmid) throws IOException {
+		String resultPath = dataPath + "results/" + pmid + ".results";
+		String submissionPath = dataPath + "submissions/" + pmid + "." + numTopGo + "." + numTopPmid;
 		//printInfo("Annotating " + resultPath);
-		annotator.annotate(queries, resultPath, annotator, pmid, numTopGo, numTopPmid);
+//		ArrayList<Query> queries = new ArrayList<Query>();
+//		String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
+//		String line, geneId, goId, sentence;
+//		BufferedReader reader = new BufferedReader(new FileReader(goldOut));
+//		Query query;
+//		String[] items;
+//		HashSet<String> identifiedGeneSet = new HashSet<String>();
+//		System.out.println(pmid);
+//		String signature, queryId;
+//		HashSet<String> signatureSet = new HashSet<String>();
+//		int n = 1;
+//		while ((line = reader.readLine()) != null) {
+//			items = line.split("\\|\\|");
+//			geneId = items[1];
+//			//goId = items[2];
+//			//sentence = items[3];
+//			signature = geneId + " " + sentence;
+//			
+//			if (signatureSet.contains(signature)) continue;
+//			signatureSet.add(signature);			
+//			
+//			query = new Query();
+//			identifiedGeneSet.add(geneId);
+//			query.setId(n + "-" + geneId);
+//			query.setGene(geneId);
+//			query.setText(sentence);
+//			queries.add(query);
+//			n++;
+//		}
+//		
+//		Parser.makeTokenSentences(queries);
+		
+//		readFromClassification(pmid, queries);
+		annotator.annotate(resultPath, submissionPath, annotator, pmid, numTopGo, numTopPmid);
 		//printInfo("Done");
 	}
 	
@@ -253,7 +288,6 @@ public class GoTaskMain {
 			n++;
 		}
 		
-		
 		geneToGopmids = Mapping.makeGeneToPmids(identifiedGeneSet, slimToGopmids, geneslimPath);
 		
 		for (int i = 0; i < queries.size(); i++) {
@@ -295,8 +329,8 @@ public class GoTaskMain {
 	public static void runTest(String pmid) throws IOException, XMLStreamException {
 		// Split and output XML files that contains sentences
 		ArrayList<Query> queries = new ArrayList<Query>();
-		String inXML = System.getProperty("user.dir") + "/data/articles/" + pmid + ".xml";
-		String outXML = System.getProperty("user.dir") + "/data/articles_sent/" + pmid + ".xml";
+		String inXML = dataPath + "articles/" + pmid + ".xml";
+		String outXML = dataPath + "articles_sent/" + pmid + ".xml";
 		//System.out.println("inXML: "+inXML + " outXML:"+outXML);
 		if (! checkExistence(outXML)) {
 			convertor.split(inXML, outXML);
@@ -322,7 +356,7 @@ public class GoTaskMain {
 	    String paramPath = dataPath + "queries/" + pmid + ".param";
 	    String resultPath = dataPath + "results/" + pmid + ".result";
 
-		retrieve(queries, paramPath, resultPath, true);
+		retrieve(queries, paramPath, resultPath, false);
 		//System.exit(0);
 		//annotate(queries, resultPath, annotator, pmid);
 
@@ -431,7 +465,11 @@ public class GoTaskMain {
 		
 		
 
-		String mode = args[0]; //"test";
+		String mode = "annot";//args[0]; //"test";
+		numTopPmid = 10;
+		numTopGo = 1;
+		
+		
 		System.out.println(mode);
 		//System.exit(0);
 		initialize(mode); // Initialization		
@@ -450,13 +488,15 @@ public class GoTaskMain {
 			if (!items[1].equals("xml")) continue;
 			pmid = items[0];
 	
-			if ("21901818".equals(pmid) || ("22870182".equals(pmid))) continue; //19074149 12213836 22792398
+			if ("21931818".equals(pmid) || ("22870182".equals(pmid))) continue; //19074149 12213836 22792398
 			if (mode.equals("test")) {
 				runTest(pmid);
-			} else {
+			} else if (mode.equals("train")) {
 				System.out.println("Generating gold standards for " + pmid);
 				runTrain(pmid);
 				System.out.println();
+			} else {
+				annotate(pmid);
 			}
 		}
 		

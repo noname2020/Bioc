@@ -1,5 +1,6 @@
 package annotation;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -18,17 +19,24 @@ import utility.Sorting;
 
 public class SimpleAnnotator extends Annotator {
 	@Override
-	public void annotate(ArrayList<Query> queries, String resultPath, Annotator annotator, String articlePmid, int numTopGo, int numTopPmid) throws IOException {
+	public void annotate(String resultPath, String submissionPath, Annotator annotator, String articlePmid, int numTopGo, int numTopPmid) throws IOException {
 		ArrayList<IndriResult> results;
-		String id, pmid, goId, goEvidence, gene;
+		String pmid, goId, goEvidence, gene;
 		GeneOntology go;
 		ArrayList<Triple> triples;
 		double score;
-		int t;
+		int t, rank;
 		String temp;
+		String[] items;
 		
-		int rank;
 		System.out.println(resultPath);
+		
+		File file = new File(resultPath);
+		if (!file.exists()) {
+			System.out.println("file does not exit");
+			return;
+		}
+		
 		
 		HashMap<String, ArrayList<IndriResult>> idToResults = Parser.getIdToResults(resultPath, numTopPmid);
 		
@@ -41,15 +49,16 @@ public class SimpleAnnotator extends Annotator {
 //			System.out.println(iid);
 //		}
 		
-		//String outPath = "/home/zhu/workspace/Bioc/data/forpanther/" + articlePmid + ".pmid100";
-		//PrintStream outStream = new PrintStream(outPath);
+		PrintStream outStream = new PrintStream(submissionPath);
+		
+		String output;
+		
 		
 		ArrayList<GeneOntology> topGoes;
 		HashMap<GeneOntology, Double> goToScore;
 		Map<GeneOntology, Double> goToScoreSorted;
 		
-		for (Query query : queries) {
-			id = query.getId();
+		for (String id : idToResults.keySet()) {
 			results = idToResults.get(id);
 			goToScore = new HashMap<GeneOntology, Double>();
 			
@@ -79,20 +88,19 @@ public class SimpleAnnotator extends Annotator {
 					}
 					
 					//System.out.println(goId + " " + goEvidence + " " + score);
-					temp = query.getId() + " " + pmid + " " + rank + " " + goId + " " + goEvidence;
+					//temp = id + " " + pmid + " " + rank + " " + goId + " " + goEvidence;
 					//System.out.println(temp);				
 					//outStream.println(temp);
 				}
 				
-				if (print) {
-					System.out.println("offset: " + query.getId());
-					System.out.println("\tpmid:" + pmid);
-					for (Triple triple : triples) {
-						System.out.println("\t\t" + triple.getGoId() + " " + triple.getEvidence());
-					}
-					System.out.println();
-					System.out.println();
-				}
+//				if (print) {
+//					System.out.println("\tpmid:" + pmid);
+//					for (Triple triple : triples) {
+//						System.out.println("\t\t" + triple.getGoId() + " " + triple.getEvidence());
+//					}
+//					System.out.println();
+//					System.out.println();
+//				}
 			}
 			
 			
@@ -104,29 +112,35 @@ public class SimpleAnnotator extends Annotator {
 			topGoes = new ArrayList<GeneOntology>(); 
 			t = 0;
 			for (Entry<GeneOntology, Double> entry : goToScoreSorted.entrySet()) {
-				//System.out.println(entry.getKey().getGoId() + " " + entry.getKey().getEvidence() + "\t" + Math.log(entry.getValue()));
+				//System.out.println(id + "\t" + entry.getKey().getGoId() + " " + entry.getKey().getEvidence() + "\t" + Math.log(entry.getValue()));
+				items = id.split("-");
+				System.out.println(articlePmid + "\t" + items[1] + "\t" + entry.getKey().getGoId() + " " + entry.getKey().getEvidence() + "\t" + Math.log(entry.getValue()));
+				output = articlePmid + " " + items[1] + " " + entry.getKey().getGoId();
+				outStream.println(output);
+				//System.out.println(output);				
 				t++;
 				topGoes.add(entry.getKey());
 				if (t == numTopGo) {
 					break;
 				}
+				
 			}
 			
+			System.out.println("===============================");
+			
 			//System.out.println(topGoes.size() + " Gosize");
-			query.setTopGoes(topGoes);
-			//query.printGoInfo();
 			//System.out.println();
 			//System.out.println();
 			//System.exit(0);
 		}	
 		
 		
-		//outStream.close();
+		outStream.close();
 	}
 
 	
 	public static void main(String[] args) throws IOException {
-		String dataPath = "/home/zhu/workspace/Bioc/data/";
+		String dataPath = "";
 		String resultPath = dataPath + "sampletestquery.result";
 		int top = 50;
 		

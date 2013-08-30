@@ -11,7 +11,7 @@ public abstract class Annotator {
 	private HashMap<String, ArrayList<Triple>> pmidToTriples;
 	protected boolean print;
 	
-	public abstract void annotate(ArrayList<Query> queries, String resultPath,
+	public abstract void annotate(String resultPath, String submissionPath,
 			Annotator annotator, String articlePmid, int limit, int top) throws IOException;
 
 	public HashMap<String, ArrayList<Triple>> getPmidToTriples() {

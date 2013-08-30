@@ -382,7 +382,7 @@ public class Parser {
 	}
 	
 	/**
-	 * Reada Indri results in TREC format and returns a map (query:result)
+	 * Read Indri results in TREC format and returns a map (query:results)
 	 * Note that the document ID are normalized to PMID for Medline articles.
 	 * 
 	 * @param top Number of the top-ranked result to store in the map
