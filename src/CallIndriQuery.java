@@ -56,9 +56,9 @@ public class CallIndriQuery {
 		//String makeCom = "IndriRunQuery "+args[0]+" > data/results/"+pmid+".result";
 		String makeCom = "IndriRunQuery "+args[0];
 		System.out.println(makeCom);
-		Runtime rt = Runtime.getRuntime();
-		Process pr = rt.exec(makeCom);
-		//CallIndriQuery.compileScripts(runtime, makeCom);
+		//Runtime rt = Runtime.getRuntime();
+		//Process pr = rt.exec(makeCom);
+		CallIndriQuery.compileScripts(runtime, makeCom);
 	}
 
 }
