@@ -28,7 +28,7 @@ endif
 ### note: the model file name is changed to MedTagger_model_third
 all: class link-resources
 	$(JAVAC) $(JAVAC_FLAGS) `find src -name '*.java'`
-	for subdir in data/queries/*; $(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) CallIndriQuery ${subdir} ; done
+	for subdir in data/queries/*; do $(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) CallIndriQuery ${subdir} ; done
 #	for subdir in data/queries/*; do \
 #		$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) CallIndriQuery ${subdir} ; \
 #	done
