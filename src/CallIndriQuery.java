@@ -51,7 +51,7 @@ public class CallIndriQuery {
 	 */
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		String pmid = args[0].substring(args[0].lastIndexOf("/")+1,args[0].indexOf("param")-1);
+		//String pmid = args[0].substring(args[0].lastIndexOf("/")+1,args[0].indexOf("param")-1);
 		Runtime runtime = Runtime.getRuntime();
 		//String makeCom = "IndriRunQuery "+args[0]+" > data/results/"+pmid+".result";
 		String makeCom = "IndriRunQuery "+args[0];
