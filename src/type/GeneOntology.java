@@ -41,7 +41,7 @@ public class GeneOntology {
 		if(o == this) return true;
 		if(o == null || !(o instanceof GeneOntology)) return false;
 		GeneOntology copy = GeneOntology.class.cast(o);
-		return goId.equals(copy.goId) && evidence.equals(copy.evidence);
+		return goId.equals(copy.goId);// && evidence.equals(copy.evidence);
 		//return goId.equals(copy.goId);
 		//return evidence.equals(copy.evidence);
 	}	
