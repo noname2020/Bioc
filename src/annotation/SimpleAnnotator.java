@@ -70,6 +70,7 @@ public class SimpleAnnotator extends Annotator {
 			}
 			for (IndriResult result : results) {
 				pmid = result.getDocument();
+				System.out.println(pmid);
 				score = Math.pow(Math.E, result.getScore());
 				triples = getPmidToTriples().get(pmid);
 				rank = result.getRank();
