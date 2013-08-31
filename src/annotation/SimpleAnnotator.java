@@ -74,7 +74,9 @@ public class SimpleAnnotator extends Annotator {
 				score = Math.pow(Math.E, result.getScore());
 				triples = getPmidToTriples().get(pmid);
 				rank = result.getRank();
-						
+				if(triples==null){
+					continue;
+				}
 				for (Triple triple : triples) {	
 					goId = triple.getGoId();
 					goEvidence = triple.getEvidence();
