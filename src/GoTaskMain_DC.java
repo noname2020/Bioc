@@ -131,6 +131,7 @@ public class GoTaskMain_DC {
 	public static void annotate(String pmid) throws IOException {
 		String resultPath = dataPath + "results/" + pmid + ".results";
 		String submissionPath = dataPath + "submissions/" + pmid + "." + numTopGo + "." + numTopPmid;
+		System.out.println(submissionPath);
 		//printInfo("Annotating " + resultPath);
 //		ArrayList<Query> queries = new ArrayList<Query>();
 //		String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
