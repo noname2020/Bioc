@@ -8,7 +8,7 @@ import type.Query;
 import type.Triple;
 
 public abstract class Annotator {
-	private HashMap<String, ArrayList<Triple>> pmidToTriples;
+	protected HashMap<String, ArrayList<Triple>> pmidToTriples;
 	protected boolean print;
 	
 	public abstract void annotate(String resultPath, String submissionPath,

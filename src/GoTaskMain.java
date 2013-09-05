@@ -247,9 +247,10 @@ public class GoTaskMain {
 		for(String gopmid : gopmids) {
 			items = gopmid.split(" ");
 			pmid = items[1];
+			if (!pmidToTriples.containsKey(pmid)) continue;
 			pmcpmid = "/home/dongqing/data/pmc/fulltext-pmid/" + pmid;
-			if (workingset.contains(pmcpmid)) reducedWorkingset.add(pmid);
-			else reducedWorkingset.add(pmid);
+			if (workingset.contains(pmid)) reducedWorkingset.add(pmid);
+			if (workingset.contains(pmcpmid)) reducedWorkingset.add(pmcpmid);
 			//System.out.println(pmid);
 		}
 		//.out.println();
