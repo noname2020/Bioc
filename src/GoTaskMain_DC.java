@@ -56,10 +56,10 @@ import utility.PsgToSentXML;
 public class GoTaskMain_DC {
 	//private static String dataPath = System.getProperty("user.dir") + "/data/";
 	private static String dataPath =  "/Users/m048100/Dropbox/Bioc/data/";
-	private static String workingsetPath = dataPath + "workingset.txt";
-	private static String triplePath = dataPath + "triples.unique";
-	private static String geneslimPath = dataPath + "GeneID.2GOSLIM";
-	private static String slimpmidPath = dataPath + "slimpmid.txt";
+	private static String workingsetPath;
+	private static String triplePath;
+	private static String geneslimPath;
+	private static String slimpmidPath;
 	
 	private static HashSet<String> workingset;
 	private static HashMap<String, ArrayList<Triple>> pmidToTriples;
@@ -88,6 +88,10 @@ public class GoTaskMain_DC {
 	 */
 	
 	public static void initialize(String mode) throws IOException {
+		workingsetPath = dataPath + "workingset.txt";
+		triplePath = dataPath + "triples.unique";
+		geneslimPath = dataPath + "GeneID.2GOSLIM";
+		slimpmidPath = dataPath + "slimpmid.txt";
 		if (!mode.equals("train")) {
 			pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
 			workingset = Parser.getSameWorkingset(workingsetPath);
