@@ -28,7 +28,7 @@ endif
 ### note: the model file name is changed to MedTagger_model_third
 all: class link-resources
 	$(JAVAC) $(JAVAC_FLAGS) `find src -name '*.java'`
-	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain test	data/
+	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain_DC test	data/
 	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain_DC annot	data/
 #	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain train
 #	 
