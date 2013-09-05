@@ -481,7 +481,7 @@ public class GoTaskMain_DC {
 			numTopGo = Integer.parseInt(args[3]);
 		}else if(args.length==2){
 			mode = args[0];
-			dataPath = args[2];
+			dataPath = args[1];
 		}
 		
 		System.out.println(mode);
