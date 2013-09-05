@@ -70,11 +70,13 @@ public class SimpleAnnotator extends Annotator {
 			}
 			for (IndriResult result : results) {
 				pmid = result.getDocument();
+				System.out.println(pmid);
 				score = Math.pow(Math.E, result.getScore());
-				triples = pmidToTriples.get(pmid); //getPmidToTriples()
+				triples = getPmidToTriples().get(pmid);
 				rank = result.getRank();
-				
-				if (triples == null) continue;		
+				if(triples==null){
+					continue;
+				}
 				for (Triple triple : triples) {	
 					goId = triple.getGoId();
 					goEvidence = triple.getEvidence();
