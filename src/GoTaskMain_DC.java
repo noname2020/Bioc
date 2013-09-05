@@ -474,12 +474,14 @@ public class GoTaskMain_DC {
 
 		String mode = "annot";//args[0]; //"test";
 		
-		if(args.length>1){
+		if(args.length>2){
 			mode = args[0];
-			numTopPmid = Integer.parseInt(args[1]);
-			numTopGo = Integer.parseInt(args[2]);
-		}else if(args.length==1){
+			dataPath = args[1];
+			numTopPmid = Integer.parseInt(args[2]);
+			numTopGo = Integer.parseInt(args[3]);
+		}else if(args.length==2){
 			mode = args[0];
+			dataPath = args[2];
 		}
 		
 		System.out.println(mode);
