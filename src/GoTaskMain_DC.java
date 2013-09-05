@@ -489,7 +489,7 @@ public class GoTaskMain_DC {
 		}else if(args.length==2){
 			mode = args[0];
 			dataPath = args[1];
-			modePath = "/bc4go_test_v090313";
+			modePath = "";
 		}
 		
 		System.out.println(mode);
