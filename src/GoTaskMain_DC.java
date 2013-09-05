@@ -342,7 +342,7 @@ public class GoTaskMain_DC {
 		//String outXML = System.getProperty("user.dir") + "/data/articles_sent/" + pmid + ".xml";
 		//String inXML = dataPath + "/bc4go_dev_v081213/articles/" + pmid + ".xml";
 		//String outXML = dataPath + "/bc4go_dev_v081213/articles_sent/" + pmid + ".xml";
-		String inXML = dataPath +"/" + modePath + pmid + ".xml";
+		String inXML = dataPath +"/" + modePath +"articles/" + pmid + ".xml";
 		String outXML = dataPath +"/" + modePath+"/articles_sent/" + pmid + ".xml";
 		//String inXML = dataPath + "articles/" + pmid + ".xml";
 		//String outXML = dataPath + "articles_sent/" + pmid + ".xml";
@@ -489,7 +489,7 @@ public class GoTaskMain_DC {
 		}else if(args.length==2){
 			mode = args[0];
 			dataPath = args[1];
-			modePath = "/bc4go_test_v090313/articles/";
+			modePath = "/bc4go_test_v090313";
 		}
 		
 		System.out.println(mode);
@@ -503,7 +503,7 @@ public class GoTaskMain_DC {
 		String articlePath, pmid;
 		String[] parts, items;
 		//File articleDir = new File(dataPath + "/bc4go_dev_v081213/articles/");
-		File articleDir = new File(dataPath +"/" + modePath);
+		File articleDir = new File(dataPath +"/" + modePath+"/articles/");
 		for (File articleFile : articleDir.listFiles()) {
 			articlePath = articleFile.getPath();
 			parts = articlePath.split("/");
