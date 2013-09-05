@@ -339,7 +339,7 @@ public class GoTaskMain_DC {
 		//String outXML = System.getProperty("user.dir") + "/data/articles_sent/" + pmid + ".xml";
 		//String inXML = dataPath + "/bc4go_dev_v081213/articles/" + pmid + ".xml";
 		//String outXML = dataPath + "/bc4go_dev_v081213/articles_sent/" + pmid + ".xml";
-		String inXML = dataPath + "/bc4go_test_v0903/articles/" + pmid + ".xml";
+		String inXML = dataPath + "/bc4go_test_v090313/articles/" + pmid + ".xml";
 		String outXML = dataPath + "/bc4go_test_v090313/articles_sent/" + pmid + ".xml";
 		//String inXML = dataPath + "articles/" + pmid + ".xml";
 		//String outXML = dataPath + "articles_sent/" + pmid + ".xml";
