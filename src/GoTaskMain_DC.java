@@ -56,10 +56,12 @@ import utility.PsgToSentXML;
 public class GoTaskMain_DC {
 	//private static String dataPath = System.getProperty("user.dir") + "/data/";
 	private static String dataPath =  "/Users/m048100/Dropbox/Bioc/data/";
+	private static String modePath;
 	private static String workingsetPath;
 	private static String triplePath;
 	private static String geneslimPath;
 	private static String slimpmidPath;
+	private static String gold1aOutPath;
 	
 	private static HashSet<String> workingset;
 	private static HashMap<String, ArrayList<Triple>> pmidToTriples;
@@ -92,6 +94,7 @@ public class GoTaskMain_DC {
 		triplePath = dataPath + "triples.unique";
 		geneslimPath = dataPath + "GeneID.2GOSLIM";
 		slimpmidPath = dataPath + "slimpmid.txt";
+		gold1aOutPath = dataPath +"goldtask1";
 		if (!mode.equals("train")) {
 			pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
 			workingset = Parser.getSameWorkingset(workingsetPath);
@@ -263,7 +266,7 @@ public class GoTaskMain_DC {
 	}
 	
 	public static void readFromClassification(String pmid, ArrayList<Query> queries) throws IOException {
-		String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
+		String goldOut = gold1aOutPath +"/" + pmid + ".txt";
 		HashMap<String, String> pmidToLines = new HashMap<String, String>();
 		String line, geneId, goId, sentence;
 		BufferedReader reader = new BufferedReader(new FileReader(goldOut));
@@ -339,8 +342,8 @@ public class GoTaskMain_DC {
 		//String outXML = System.getProperty("user.dir") + "/data/articles_sent/" + pmid + ".xml";
 		//String inXML = dataPath + "/bc4go_dev_v081213/articles/" + pmid + ".xml";
 		//String outXML = dataPath + "/bc4go_dev_v081213/articles_sent/" + pmid + ".xml";
-		String inXML = dataPath + "/bc4go_test_v090313/articles/" + pmid + ".xml";
-		String outXML = dataPath + "/bc4go_test_v090313/articles_sent/" + pmid + ".xml";
+		String inXML = dataPath +"/" + modePath + pmid + ".xml";
+		String outXML = dataPath +"/" + modePath+"/articles_sent/" + pmid + ".xml";
 		//String inXML = dataPath + "articles/" + pmid + ".xml";
 		//String outXML = dataPath + "articles_sent/" + pmid + ".xml";
 //>>>>>>> branch 'master' of https://github.com/noname2020/Bioc.git
@@ -486,6 +489,7 @@ public class GoTaskMain_DC {
 		}else if(args.length==2){
 			mode = args[0];
 			dataPath = args[1];
+			modePath = "/bc4go_test_v090313/articles/";
 		}
 		
 		System.out.println(mode);
@@ -499,7 +503,7 @@ public class GoTaskMain_DC {
 		String articlePath, pmid;
 		String[] parts, items;
 		//File articleDir = new File(dataPath + "/bc4go_dev_v081213/articles/");
-		File articleDir = new File(dataPath + "/bc4go_test_v090313/articles/");
+		File articleDir = new File(dataPath +"/" + modePath);
 		for (File articleFile : articleDir.listFiles()) {
 			articlePath = articleFile.getPath();
 			parts = articlePath.split("/");
