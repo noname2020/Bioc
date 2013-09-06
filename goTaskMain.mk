@@ -11,7 +11,7 @@ $(JAVA_FLAGS) \
 -sourcepath "$(Bioc)/src:$(Bioc)/autosrc" \
 -g:lines,vars,source \
 -d $(Bioc)/class \
--J-Xmx30g -source 1.7
+#-J-Xmx30g -source 1.7
 
 JAVADOC = javadoc
 JAVADOC_FLAGS = -J-Xmx3g
