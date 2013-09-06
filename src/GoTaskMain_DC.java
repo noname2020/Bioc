@@ -30,6 +30,10 @@ import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLStreamException;
 
+import org.python.core.PyObject;
+import org.python.core.PyString;
+import org.python.util.PythonInterpreter;
+
 
 import annotation.Annotator;
 import annotation.SimpleAnnotator;
@@ -526,6 +530,15 @@ public class GoTaskMain_DC {
 						for(int j=5;j<=50;j++){
 							numTopGo = j;
 							annotate(pmid); //in this case, we will do i * j times annotate
+							//still not sure how this works. Further, mergegoes works on one mered file. Probably, using make file better
+//							for(int k=1;k<10;k++){
+//								PythonInterpreter interpreter = new PythonInterpreter();
+//								interpreter.exec("import sys\nsys.path.append('pathToModiles if they're not there by default')\nimport os");
+//								// execute a function that takes a string and returns a string
+//								PyObject someFunc = interpreter.get("mergegoes");
+//								PyObject result = someFunc.__call__(new PyString("Test!"));
+//								String realResult = (String) result.__tojava__(String.class);
+//							}
 						}
 					}
 				}else{//in this case, it means that numTopPmid and numTopGo are fixed
