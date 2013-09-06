@@ -163,6 +163,7 @@ public class GoTaskMain_DC {
 			qlmodel.addIndex("../index/pmc-stemming/");
 			qlmodel.addIndex("../index/bioasq_train_indri/");
 		} else if (runId == 2) {
+			
 			qlmodel.addIndex("../index/generif.index");
 		}
 		//qlmodel.addIndex("~/index/pmc-stemming/");
@@ -292,6 +293,10 @@ public class GoTaskMain_DC {
 		for (int i = 0; i < queries.size(); i++) {
 			query = queries.get(i);
 			geneId = query.getGene();
+			if(runId==2){
+				workingset = null;
+				continue;
+			}
 			//System.out.println(geneId);
 			if ( !geneToGopmids.containsKey(query.getGene()) ) {
 				query.setWorkingset(workingset);
