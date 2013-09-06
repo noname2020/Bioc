@@ -383,10 +383,10 @@ public class GoTaskMain_DC {
 		HashMap<Query, Query> queryMap;
 		ArrayList<ScorePR> allScores = new ArrayList<ScorePR>();
 		ArrayList<Sentence> sentences;
-		PsgToSentXML convertor = new PsgToSentXML();
-		Sentence sentence;
-	    String paramPath = dataPath + "queries/" + pmid + ".param";
-	    String resultPath = dataPath + "results/" + pmid + ".result";	
+		//PsgToSentXML convertor = new PsgToSentXML();
+		//Sentence sentence;
+	    //String paramPath = dataPath + "queries/" + pmid + ".param";
+	    //String resultPath = dataPath + "results/" + pmid + ".result";	
 	    String goldPath = dataPath + "goldstandard/annotation_" + pmid + ".xml";
 	    String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
 	    PrintStream goldOutTrain = new PrintStream(goldOut);
