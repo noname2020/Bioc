@@ -81,11 +81,13 @@ public abstract class IndriMakeQuery {
 		queryBuffer.append(query.getQuery());
 		queryBuffer.append("</text>\n");
 		HashSet<String> workingSet = query.getWorkingset();
-		Iterator<String> iter = workingSet.iterator();
-		while (iter.hasNext()) {
-			queryBuffer.append("<workingSetDocno>");
-			queryBuffer.append(iter.next());
-			queryBuffer.append("</workingSetDocno>\n");
+		if (workingSet != null) {
+			Iterator<String> iter = workingSet.iterator();
+			while (iter.hasNext()) {
+				queryBuffer.append("<workingSetDocno>");
+				queryBuffer.append(iter.next());
+				queryBuffer.append("</workingSetDocno>\n");
+			}
 		}
 		queryBuffer.append("</query>\n");
 		return queryBuffer.toString();
