@@ -504,7 +504,7 @@ public class GoTaskMain_DC {
 				runTrain(pmid);
 				System.out.println();
 			} else { //here, mode must be annot
-				if(args.length==1){ //repeat the if condition, but we need to do different things.
+				if(args.length==2){ //repeat the if condition, but we need to do different things.
 					for(int i=1;i<=20;i++){
 						numTopPmid = i;
 						for(int j=5;j<=50;j++){
