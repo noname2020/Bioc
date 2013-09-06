@@ -71,6 +71,7 @@ public class GoTaskMain {
 	
 	private static int numTopPmid = 20;
 	private static int numTopGo = 5;
+	private static int runId;
 	
 	private static Pattern pattern = Pattern.compile(".*\\((\\d+)\\)");
 	private static Pattern patternMultiple = Pattern.compile(".*\\(([\\d;]+)\\)");
@@ -164,8 +165,11 @@ public class GoTaskMain {
 	public static void retrieve(Collection<Query> queries, String paramPath, String resultPath, boolean rewrite) throws IOException {
 		printInfo("Formulating queries ");
 		IndriMakeQuery qlmodel = new LMDirichlet(50, 500, queries);
-		qlmodel.addIndex("../index/pmc-stemming/");
-		qlmodel.addIndex("../index/bioasq_train_indri/");
+		if (runId == 2) qlmodel.addIndex("../index/generif.index/");
+		else {
+			qlmodel.addIndex("../index/pmc-stemming/");
+			qlmodel.addIndex("../index/bioasq_train_indri/");
+		}
 		//qlmodel.addIndex("~/index/pmc-stemming/");
 		//qlmodel.addIndex("~/index/bioasq_train_indri/");
 		//for (Query query : qlmodel.getQueries()) {
@@ -469,6 +473,7 @@ public class GoTaskMain {
 		String mode = "annot";//args[0]; //"test";
 		numTopPmid = 10;
 		numTopGo = 1;
+		runId = 2;
 		
 		
 		System.out.println(mode);
