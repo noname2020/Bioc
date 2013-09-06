@@ -75,11 +75,11 @@ public class GoTaskMain_DC {
 	 */
 
 	public static void initialize(String mode) throws IOException {
-		workingsetPath = dataPath + "workingset.txt";
-		triplePath = dataPath + "triples.unique";
-		geneslimPath = dataPath + "GeneID.2GOSLIM";
-		slimpmidPath = dataPath + "slimpmid.txt";
-		gold1aOutPath = dataPath +"goldtask1";
+		workingsetPath = dataPath.substring(0,dataPath.indexOf("/")) + "/workingset.txt";
+		triplePath = dataPath.substring(0,dataPath.indexOf("/")) + "/triples.unique";
+		geneslimPath = dataPath.substring(0,dataPath.indexOf("/")) + "/GeneID.2GOSLIM";
+		slimpmidPath = dataPath.substring(0,dataPath.indexOf("/")) + "/slimpmid.txt";
+		gold1aOutPath = dataPath.substring(0,dataPath.indexOf("/")) +"/goldtask1";
 		if (!mode.equals("train")) {
 			pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
 			workingset = Parser.getSameWorkingset(workingsetPath);
