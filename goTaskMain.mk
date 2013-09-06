@@ -5,13 +5,13 @@ JAVA = java
 
 #JAVAC = ~/java/jdk1.7.0_11/bin/javac
 #JAVA = ~/java/jdk1.7.0_11/bin/java
-JAVA_FLAGS = -classpath "$(Bioc)/class:lib/commons-lang3-3.1.jar:lib/commons-compress-1.4.1.jar:lib/json-simple-1.1.jar:lib/commons-io-2.4.jar:lib/lingpipe-4.1.0.jar:external/BioC_Java_1.0/lib/bioc.jar:external/BioC_Java_1.0/lib/biolemmatizer-core-1.1-jar-with-dependencies.jar:external/BioC_Java_1.0/lib/junit-4.1.1.jar:external/BioC_Java_1.0/lib/hamcrest-core-1.3.jar:external/BioC_Java_1.0/lib/stax-utils.jar:external/BioC_Java_1.0/lib/stax2-api-3.1.1.jar:external/BioC_Java_1.0/lib/woodstox-core-asl-4.15.jar:external/BioC_Java_1.0/lib/xmlunit-1.4.jar"
+JAVA_FLAGS = -classpath "$(Bioc)/class:lib/commons-lang3-3.1.jar:lib/commons-compress-1.4.1.jar:lib/json-simple-1.1.jar:lib/commons-io-2.4.jar:lib/lingpipe-4.1.0.jar:lib/jython-2.2-beta1.jar:external/BioC_Java_1.0/lib/bioc.jar:external/BioC_Java_1.0/lib/biolemmatizer-core-1.1-jar-with-dependencies.jar:external/BioC_Java_1.0/lib/junit-4.1.1.jar:external/BioC_Java_1.0/lib/hamcrest-core-1.3.jar:external/BioC_Java_1.0/lib/stax-utils.jar:external/BioC_Java_1.0/lib/stax2-api-3.1.1.jar:external/BioC_Java_1.0/lib/woodstox-core-asl-4.15.jar:external/BioC_Java_1.0/lib/xmlunit-1.4.jar"
 JAVAC_FLAGS = \
 $(JAVA_FLAGS) \
 -sourcepath "$(Bioc)/src:$(Bioc)/autosrc" \
 -g:lines,vars,source \
 -d $(Bioc)/class \
--J-Xmx30g -source 1.7
+#-J-Xmx30g -source 1.7
 
 JAVADOC = javadoc
 JAVADOC_FLAGS = -J-Xmx3g
@@ -28,9 +28,10 @@ endif
 ### note: the model file name is changed to MedTagger_model_third
 all: class link-resources
 	$(JAVAC) $(JAVAC_FLAGS) `find src -name '*.java'`
-	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain annot
+#	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain_DC test	data/
+	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain_DC annot	data/
 #	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain train
-#	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain test 
+#	 
 #///Users/m048100/Documents/i2b2/i2b2Challenge2010/Data/release3_merged/ldaModels/i2b22010_txt.uniNorm_eventStr-final_alpha=0.25_beta=0.1_k=100.phi
 #///Users/m048100/Documents/i2b2/i2b2Challenge2010/Data/release3_merged/ldaModels/aspects.json.i2b22010_txt.uniNorm_eventStr-final_6.phi.global /Users/m048100/Documents/i2b2/i2b2Challenge2010/Data/release3_merged/GoldStdsvm_features uniNorm+eventStr train
 

@@ -21,7 +21,7 @@ for pmid in pmidToResults:
 	for gene, go in geneNgo:
 		goes = geneToGoes.setdefault(gene, [])
 		goes.append(go)
-	for gene in geneToGoes:
+	for gene in 	geneToGoes:
 		goes = geneToGoes[gene]
 		goToCount = {}
 		for go in goes:
