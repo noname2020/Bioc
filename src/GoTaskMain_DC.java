@@ -251,7 +251,7 @@ public class GoTaskMain_DC {
 	}
 	
 	public static void readFromClassification(String pmid, ArrayList<Query> queries) throws IOException {
-		String goldOut = gold1aOutPath +"/" + pmid + ".txt";
+		String goldOut = gold1aOutPath +"/" + pmid + ".txt";	
 		HashMap<String, String> pmidToLines = new HashMap<String, String>();
 		String line, geneId, goId, sentence;
 		BufferedReader reader = new BufferedReader(new FileReader(goldOut));
