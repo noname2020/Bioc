@@ -1,4 +1,8 @@
 #!/usr/bin/python
+"""
+Usage: python splitgoldtask data/hongfang.input [name-ur-own-output-folder]
+Note that do not overwrite the existing files in the output folder。
+"""
 import os
 import sys
 
