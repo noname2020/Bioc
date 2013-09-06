@@ -39,6 +39,7 @@ import evaluation.Validation;
 
 public class GoTaskMain_DC {
 	//private static String dataPath = System.getProperty("user.dir") + "/data/";
+	private static int runId = 1;
 	private static String dataPath =  "/Users/m048100/Dropbox/Bioc/data/";
 	private static String modePath;
 	private static String workingsetPath;
@@ -46,7 +47,7 @@ public class GoTaskMain_DC {
 	private static String geneslimPath;
 	private static String slimpmidPath;
 	private static String gold1aOutPath;
-	
+
 	private static HashSet<String> workingset;
 	private static HashMap<String, ArrayList<Triple>> pmidToTriples;
 	private static HashMap<String, HashSet<String>> geneToGopmids;
@@ -55,14 +56,14 @@ public class GoTaskMain_DC {
 	private static PsgToSentXML convertor;
 	private static HashMap<String, HashSet<String>> slimToGopmids;
 
-	
+
 	private static int numTopPmid = 20;
 	private static int numTopGo = 5;
-	
+
 	private static Pattern pattern = Pattern.compile(".*\\((\\d+)\\)");
 	private static Pattern patternMultiple = Pattern.compile(".*\\(([\\d;]+)\\)");
 	private static PlatformDetection platformDetect;
-    
+
 	/**
 	 * Initialization
 	 * 1. Create classifier
@@ -72,7 +73,7 @@ public class GoTaskMain_DC {
 	 * 
 	 * @throws IOException
 	 */
-	
+
 	public static void initialize(String mode) throws IOException {
 		workingsetPath = dataPath + "workingset.txt";
 		triplePath = dataPath + "triples.unique";
@@ -93,7 +94,7 @@ public class GoTaskMain_DC {
 		convertor = new PsgToSentXML();
 		platformDetect = new PlatformDetection();
 	}
-	
+
 	/**
 	 * Filter queries which are less likely to be GO related
 	 * @param queries 
@@ -111,94 +112,99 @@ public class GoTaskMain_DC {
 		printInfo("Done");
 		return validQueries;
 	}
-	
+
 	public static void annotate(String pmid) throws IOException {
 		String resultPath = dataPath + "results/" + pmid + ".results";
 		String submissionPath = dataPath + "submissions/" + pmid + "." + numTopGo + "." + numTopPmid;
 		System.out.println(submissionPath);
 		//printInfo("Annotating " + resultPath);
-//		ArrayList<Query> queries = new ArrayList<Query>();
-//		String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
-//		String line, geneId, goId, sentence;
-//		BufferedReader reader = new BufferedReader(new FileReader(goldOut));
-//		Query query;
-//		String[] items;
-//		HashSet<String> identifiedGeneSet = new HashSet<String>();
-//		System.out.println(pmid);
-//		String signature, queryId;
-//		HashSet<String> signatureSet = new HashSet<String>();
-//		int n = 1;
-//		while ((line = reader.readLine()) != null) {
-//			items = line.split("\\|\\|");
-//			geneId = items[1];
-//			//goId = items[2];
-//			//sentence = items[3];
-//			signature = geneId + " " + sentence;
-//			
-//			if (signatureSet.contains(signature)) continue;
-//			signatureSet.add(signature);			
-//			
-//			query = new Query();
-//			identifiedGeneSet.add(geneId);
-//			query.setId(n + "-" + geneId);
-//			query.setGene(geneId);
-//			query.setText(sentence);
-//			queries.add(query);
-//			n++;
-//		}
-//		
-//		Parser.makeTokenSentences(queries);
-		
-//		readFromClassification(pmid, queries);
+		//		ArrayList<Query> queries = new ArrayList<Query>();
+		//		String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
+		//		String line, geneId, goId, sentence;
+		//		BufferedReader reader = new BufferedReader(new FileReader(goldOut));
+		//		Query query;
+		//		String[] items;
+		//		HashSet<String> identifiedGeneSet = new HashSet<String>();
+		//		System.out.println(pmid);
+		//		String signature, queryId;
+		//		HashSet<String> signatureSet = new HashSet<String>();
+		//		int n = 1;
+		//		while ((line = reader.readLine()) != null) {
+		//			items = line.split("\\|\\|");
+		//			geneId = items[1];
+		//			//goId = items[2];
+		//			//sentence = items[3];
+		//			signature = geneId + " " + sentence;
+		//			
+		//			if (signatureSet.contains(signature)) continue;
+		//			signatureSet.add(signature);			
+		//			
+		//			query = new Query();
+		//			identifiedGeneSet.add(geneId);
+		//			query.setId(n + "-" + geneId);
+		//			query.setGene(geneId);
+		//			query.setText(sentence);
+		//			queries.add(query);
+		//			n++;
+		//		}
+		//		
+		//		Parser.makeTokenSentences(queries);
+
+		//		readFromClassification(pmid, queries);
 		annotator.annotate(resultPath, submissionPath, annotator, pmid, numTopGo, numTopPmid);
 		//printInfo("Done");
 	}
-	
+
 	public static void retrieve(Collection<Query> queries, String paramPath, String resultPath, boolean rewrite) throws IOException {
 		printInfo("Formulating queries ");
 		IndriMakeQuery qlmodel = new LMDirichlet(50, 500, queries);
-		qlmodel.addIndex("../index/pmc-stemming/");
-		qlmodel.addIndex("../index/bioasq_train_indri/");
+
+		if (runId == 1) {
+			qlmodel.addIndex("../index/pmc-stemming/");
+			qlmodel.addIndex("../index/bioasq_train_indri/");
+		} else if (runId == 2) {
+			qlmodel.addIndex("../index/generif.index");
+		}
 		//qlmodel.addIndex("~/index/pmc-stemming/");
 		//qlmodel.addIndex("~/index/bioasq_train_indri/");
 		//for (Query query : qlmodel.getQueries()) {
-			//query.setWorkingset(workingset);
-			/*
+		//query.setWorkingset(workingset);
+		/*
 			System.out.println("Passage offset: " + query.getPsgOffset());
 			System.out.println("Sentence offset: " + query.getOffset());
 			System.out.println("Query: " + query.getQuery());
 			System.out.println("Text: " + query.getSentence());
 			System.out.println("Text length: " + query.getLength());
 			System.out.println();
-			*/
+		 */
 		//}		
 		System.out.println("# of queries: " + qlmodel.getQueries().size());		
-		
+
 		if ((!checkExistence(paramPath)) || rewrite) {
 			System.out.println("Writing to " + paramPath);
 			qlmodel.writeParam(paramPath);
 		} else {
 			System.out.println("File already exists: " + paramPath);
 		}
-		
+
 		printInfo("Done");
-		
+
 		printInfo("Running queries ");
-		
+
 		if ((!checkExistence(resultPath)) || rewrite) {
 			// TODO: IndriRunQuery
 		} else {
 			System.out.println("File already exists: " + resultPath);
 		}
-		
+
 		printInfo("Done");
 	}
-	
+
 	public static boolean checkExistence(String fileName) {
 		File file = new File(fileName);
 		return file.exists();
 	}
-	
+
 	public static void printInfo(String info) {
 		int half = 40;
 		StringBuffer buffer = new StringBuffer();
@@ -226,13 +232,13 @@ public class GoTaskMain_DC {
 	public static void read(String articlePath, ArrayList<Query> queries) {
 		printInfo("Reading queries ");
 		Parser.getSentences(articlePath, queries); // Read articles and formulate queries
-		
+
 		//queries.get(0).printInfo();queries.get(1).printInfo();System.exit(0);
-		
+
 		System.out.println("# of queries: " + queries.size());
 		printInfo("Done");
 	}
-	
+
 	public static HashSet<String> getReducedWorkingset(HashSet<String> gopmids) {
 		HashSet<String> reducedWorkingset = new HashSet<String>();
 		String[] items;
@@ -249,7 +255,7 @@ public class GoTaskMain_DC {
 		//System.exit(0);
 		return reducedWorkingset;
 	}
-	
+
 	public static void readFromClassification(String pmid, ArrayList<Query> queries) throws IOException {
 		String goldOut = gold1aOutPath +"/" + pmid + ".txt";	
 		HashMap<String, String> pmidToLines = new HashMap<String, String>();
@@ -268,10 +274,10 @@ public class GoTaskMain_DC {
 			//goId = items[2];
 			sentence = items[3];
 			signature = geneId + " " + sentence;
-			
+
 			if (signatureSet.contains(signature)) continue;
 			signatureSet.add(signature);			
-			
+
 			query = new Query();
 			identifiedGeneSet.add(geneId);
 			query.setId(n + "-" + geneId);
@@ -280,9 +286,9 @@ public class GoTaskMain_DC {
 			queries.add(query);
 			n++;
 		}
-		
+
 		geneToGopmids = Mapping.makeGeneToPmids(identifiedGeneSet, slimToGopmids, geneslimPath);
-		
+
 		for (int i = 0; i < queries.size(); i++) {
 			query = queries.get(i);
 			geneId = query.getGene();
@@ -294,24 +300,24 @@ public class GoTaskMain_DC {
 			}
 			System.out.println("queryId: " + query.getId() + "\tWorkingsetLength: " + query.getWorkingset().size() + "\t query:" + query.getText());
 		}
-		
-		
+
+
 		Parser.makeTokenSentences(queries);
-		
-	
-//		for (String key : geneToGopmids.keySet()) {
-//			System.out.println(key + " " + geneToGopmids.get(key));
-//		}
-//		System.exit(0);
+
+
+		//		for (String key : geneToGopmids.keySet()) {
+		//			System.out.println(key + " " + geneToGopmids.get(key));
+		//		}
+		//		System.exit(0);
 	}
-	
+
 	public static ArrayList<ScorePR> evalRanking(ArrayList<Query> queries, String goldPath) {
 		//printInfo("Evaluating results");
 		ArrayList<ScorePR> scores = Validation.getEvals(queries, goldPath);
 		//printInfo("Done");
 		return scores;
 	}
-	
+
 	public static void evalClassification(String goldPath, ArrayList<Query> queries) {
 		printInfo("Evaluate classification");
 		EvalClassification classEvaluator = new EvalClassification();
@@ -322,7 +328,7 @@ public class GoTaskMain_DC {
 	public static void runTest(String pmid) throws IOException, XMLStreamException {
 		// Split and output XML files that contains sentences
 		ArrayList<Query> queries = new ArrayList<Query>();
-//<<<<<<< HEAD
+		//<<<<<<< HEAD
 		//String inXML = System.getProperty("user.dir") + "/data/articles/" + pmid + ".xml";
 		//String outXML = System.getProperty("user.dir") + "/data/articles_sent/" + pmid + ".xml";
 		//String inXML = dataPath + "/bc4go_dev_v081213/articles/" + pmid + ".xml";
@@ -331,7 +337,7 @@ public class GoTaskMain_DC {
 		String outXML = dataPath +"/" + modePath+"/articles_sent/" + pmid + ".xml";
 		//String inXML = dataPath + "articles/" + pmid + ".xml";
 		//String outXML = dataPath + "articles_sent/" + pmid + ".xml";
-//>>>>>>> branch 'master' of https://github.com/noname2020/Bioc.git
+		//>>>>>>> branch 'master' of https://github.com/noname2020/Bioc.git
 		//System.out.println("inXML: "+inXML + " outXML:"+outXML);
 		if (! checkExistence(outXML)) {
 			convertor.split(inXML, outXML);
@@ -342,141 +348,133 @@ public class GoTaskMain_DC {
 	    		System.out.print("psgOff:" + sentence.getPsgOffset() + " off:" + sentence.getOffset() + " len:" + sentence.getLength() + " ");
 	    		System.out.println(sentence.getText());
 	    	}
-	    	*/
+			 */
 		}
-		
+
 		if(!platformDetect.getOs().equals(platformDetect.OS_LINUX)){
 			return;
 		}
-		
+
 		System.out.println("Formulating queries ... ");
 		readFromClassification(pmid, queries);
-    	//read(outXML, queries);
+		//read(outXML, queries);
 		//queries = filter(queries);
-		
-	    String paramPath = dataPath + "queries/" + pmid + ".param";
-	    String resultPath = dataPath + "results/" + pmid + ".result";
+
+		String paramPath = dataPath + "queries/" + pmid + ".param";
+		String resultPath = dataPath + "results/" + pmid + ".result";
 
 		retrieve(queries, paramPath, resultPath, false);
 		//System.exit(0);
 		//annotate(queries, resultPath, annotator, pmid);
 
 	}
-	
+
 	public static void runTrain(String pmid) throws IOException {
 		HashMap<Query, Query> queryMap;
 		ArrayList<ScorePR> allScores = new ArrayList<ScorePR>();
 		ArrayList<Sentence> sentences;
 		//PsgToSentXML convertor = new PsgToSentXML();
 		//Sentence sentence;
-	    //String paramPath = dataPath + "queries/" + pmid + ".param";
-	    //String resultPath = dataPath + "results/" + pmid + ".result";	
-	    String goldPath = dataPath + "goldstandard/annotation_" + pmid + ".xml";
-	    String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
-	    PrintStream goldOutTrain = new PrintStream(goldOut);
-	    
-	    Matcher matcher;
-	    String geneID = "";
+		//String paramPath = dataPath + "queries/" + pmid + ".param";
+		//String resultPath = dataPath + "results/" + pmid + ".result";	
+		String goldPath = dataPath + "goldstandard/annotation_" + pmid + ".xml";
+		String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
+		PrintStream goldOutTrain = new PrintStream(goldOut);
+
+		Matcher matcher;
+		String geneID = "";
 		HashSet<String> goldSet = new HashSet<String>();
 
-	    ArrayList<Annotation> annots = Parser.getAnnotations(goldPath);	    
+		ArrayList<Annotation> annots = Parser.getAnnotations(goldPath);	    
 		String gold;
 		if (annots.size() == 0) System.out.print(pmid + " has no annotations!");
 		//goldOutTrain.println(pmid);
 		for (Annotation annot : annots) {
 			//gold = annot.getOffset() + " " + annot.getGene() + " " + annot.getGo().getGoId() + " " + annot.getGo().getEvidence();
 			matcher = pattern.matcher(annot.getGene());
-		    if (matcher.find( )) {
-		    	geneID = matcher.group(1);
-		    } else {
-		         //System.out.println("NO MATCH:" + annot.getGene());
-		        
-		    	matcher = patternMultiple.matcher(annot.getGene());
-		    	if (matcher.find( )) {
-				    	geneID = matcher.group(1);
-		    	} else {
-		    		//TODO
-		    		//System.out.println("Not matched: " + pmid + " " + annot.getGene());
-		    		//System.exit(0);
-		    		continue;
-		    	}
-		    	String[] geneIDs = geneID.split(";");
-		    	for (String id : geneIDs) {
-		    		gold = pmid + "||" + id + "||" + annot.getGo().getGoId() + "||" + annot.getText();
-		    		if (goldSet.contains(gold)) continue;
-		    		System.out.println(pmid + "||" + id + "||" + annot.getGo().getGoId() + "||" + annot.getText());
-		    		goldSet.add(gold);
-		    		goldOutTrain.println(gold);
-		    	}
-		    	continue;
-		    	//System.exit(0);
-		    	// 22253607 843513;840320;829480;815862 GO:0009742
-		    }
-		    
-		    gold = pmid + "||" + geneID + "||" + annot.getGo().getGoId() + "||" + annot.getText();
-		    if (goldSet.contains(gold)) continue;
-		    System.out.println(pmid + "||" + geneID + "||" + annot.getGo().getGoId() + "||" + annot.getText());
-		    goldSet.add(gold);
-		    //System.out.println(gold);
+			if (matcher.find( )) {
+				geneID = matcher.group(1);
+			} else {
+				//System.out.println("NO MATCH:" + annot.getGene());
+
+				matcher = patternMultiple.matcher(annot.getGene());
+				if (matcher.find( )) {
+					geneID = matcher.group(1);
+				} else {
+					//TODO
+					//System.out.println("Not matched: " + pmid + " " + annot.getGene());
+					//System.exit(0);
+					continue;
+				}
+				String[] geneIDs = geneID.split(";");
+				for (String id : geneIDs) {
+					gold = pmid + "||" + id + "||" + annot.getGo().getGoId() + "||" + annot.getText();
+					if (goldSet.contains(gold)) continue;
+					System.out.println(pmid + "||" + id + "||" + annot.getGo().getGoId() + "||" + annot.getText());
+					goldSet.add(gold);
+					goldOutTrain.println(gold);
+				}
+				continue;
+				//System.exit(0);
+				// 22253607 843513;840320;829480;815862 GO:0009742
+			}
+
+			gold = pmid + "||" + geneID + "||" + annot.getGo().getGoId() + "||" + annot.getText();
+			if (goldSet.contains(gold)) continue;
+			System.out.println(pmid + "||" + geneID + "||" + annot.getGo().getGoId() + "||" + annot.getText());
+			goldSet.add(gold);
+			//System.out.println(gold);
 			goldOutTrain.println(gold);
 		}
-		
+
 		goldOutTrain.close();
 		System.out.println("Saved to " + goldOut);
 		//System.exit(0);
 		//ArrayList<Query> queries = Parser.getUniqueQueryFromAnnotation(annots);
 		//Parser.makeTokenSentences(queries);
-		
+
 
 		//retrieve(queries, paramPath, resultPath, false);
-		
+
 		//annotate(queries, resultPath, annotator, pmid);
-		
-	
-		
-		
-		
+
+
+
+
+
 		//allScores.addAll(evalRanking(queries, goldPath));
-		
+
 		//System.out.println("Processing: " + goldPath + " ... ");
-		
+
 		//evalClassification(goldPath, queries);
-//		PrintStream outStream = new PrintStream("/home/zhu/workspace/Bioc/data/forpanther/" + pmid + ".goldannot");
-//		String temp;
-//		for (Annotation annot : annots) {
-//			temp = annot.getOffset() + " " + annot.getGene() + " " + annot.getGo().getGoId() + " " + annot.getGo().getEvidence();
-//			outStream.println(temp);
-//			System.out.println(temp);
-//		}			
-//		outStream.close();
-		
+		//		PrintStream outStream = new PrintStream("/home/zhu/workspace/Bioc/data/forpanther/" + pmid + ".goldannot");
+		//		String temp;
+		//		for (Annotation annot : annots) {
+		//			temp = annot.getOffset() + " " + annot.getGene() + " " + annot.getGo().getGoId() + " " + annot.getGo().getEvidence();
+		//			outStream.println(temp);
+		//			System.out.println(temp);
+		//		}			
+		//		outStream.close();
+
 	}
-	
-	
+
+
 	public static void main(String[] args) throws IOException, XMLStreamException
 	{			
-		//Validation.checkInitialSplit();
-		///projects/ontoBioT/data/script/GOAnnot.Generif
-		
-		///projects/ontoBioT/data/script/GeneID.2GOSLIM         GeneID\tPANTHERSLIM
-		///projects/ontoBioT/data/script/ForDongqing.final	iProclass: GOSLIMID, GOID, PMID
-		
-		///projects/ontoBioT/data/script/GOPMID.stat 
-		///projects/ontoBioT/data/script/addGOPath.out
-
 		String mode = "annot";//args[0]; //"test";
-		
+
 		if(args.length>2){
 			mode = args[0];
 			dataPath = args[1];
 			numTopPmid = Integer.parseInt(args[2]);
 			numTopGo = Integer.parseInt(args[3]);
+			runId = Integer.parseInt(args[4]);
 		}else if(args.length==2){
 			mode = args[0];
 			dataPath = args[1];
 			modePath = "";
 		}
-		
+
 		System.out.println(mode);
 		//System.exit(0);
 		initialize(mode); // Initialization		
@@ -484,7 +482,7 @@ public class GoTaskMain_DC {
 
 		//for (numTopGo = 10; numTopGo <= 100; numTopGo += 10) {
 		//for (numTopPmid = 10; numTopPmid <= 100; numTopPmid += 10) {
-		
+
 		String articlePath, pmid;
 		String[] parts, items;
 		//File articleDir = new File(dataPath + "/bc4go_dev_v081213/articles/");
@@ -496,7 +494,7 @@ public class GoTaskMain_DC {
 			if (!items[1].equals("xml")) continue;
 			pmid = items[0];
 			if ("21901818".equals(pmid) || ("22870182".equals(pmid))) continue; //19074149 12213836 22792398
-			
+
 			if (mode.equals("test")) {
 				runTest(pmid);
 			} else if (mode.equals("train")) {
@@ -510,86 +508,13 @@ public class GoTaskMain_DC {
 						for(int j=5;j<=50;j++){
 							numTopGo = j;
 							annotate(pmid); //in this case, we will do i * j times annotate
-							//still not sure how this works. Further, mergegoes works on one mered file. Probably, using make file better
-//							for(int k=1;k<10;k++){
-//								PythonInterpreter interpreter = new PythonInterpreter();
-//								interpreter.exec("import sys\nsys.path.append('pathToModiles if they're not there by default')\nimport os");
-//								// execute a function that takes a string and returns a string
-//								PyObject someFunc = interpreter.get("mergegoes");
-//								PyObject result = someFunc.__call__(new PyString("Test!"));
-//								String realResult = (String) result.__tojava__(String.class);
-//							}
 						}
 					}
 				}else{//in this case, it means that numTopPmid and numTopGo are fixed
 					annotate(pmid);
 				}
-				
+
 			}
 		}
-		//System.exit(0);
-		
-		//double p = 0.0, r = 0.0;
-		//int n = 0;
-//		for (ScorePR score : allScores) {
-//			System.out.println("Precision: " + score.getPrecision() + "\tRecall: " + score.getRecall());
-//			p += score.getPrecision();
-//			r += score.getRecall();
-//			n++;
-//		}
-//		
-//		System.out.println("TopPmid:" + numTopPmid + "\tTopGo:" + numTopGo + "\tPrec:" + p/n + "\tRecall:" + r/n);
-		
-		
-			//}}
-		
-		
-//		initialize(); // Initialization
-//		
-//		File articleDir = new File(dataPath + "articles_sent/"); 
-//		String articlePath, resultPath, paramPath, pmid;
-//		ArrayList<Query> queries = null;
-//		String[] parts, items;
-//		String goldPath;
-//		
-//		for (File articleFile : articleDir.listFiles()) {
-//			articlePath = articleFile.getPath();
-//			
-//			parts = articlePath.split("/");
-//			items = parts[parts.length - 1].split("\\.");
-//			
-//			if (!items[1].equals("xml")) {
-//				continue;
-//			}
-//			
-//			pmid = items[0];
-//			paramPath = dataPath + pmid + ".param"; 
-//			resultPath  = dataPath + pmid + ".result";
-//			goldPath = dataPath + "goldstandard/annotation_" + pmid + ".xml";
-//			
-//			// Test article
-////			if (!"22702356".equals(pmid)) { //22792398
-////				continue;
-////			}
-//			
-//			System.out.println("Processing: " + articlePath + " ... ");
-//			
-//			
-//			
-//			queries = new ArrayList<Query>();
-//			
-//			
-//			//read(articlePath, queries);
-//			//queries = filter(queries);
-//			//evalClassification(goldPath, queries);
-//			
-//			
-//			
-//			retrieve(queries, paramPath, resultPath);
-////			
-////			annotate(queries, resultPath, annotator);
-////			
-//			validate(queries, goldPath);
-//		}
 	}
 }
