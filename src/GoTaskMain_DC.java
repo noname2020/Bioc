@@ -7,46 +7,21 @@
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.stream.XMLStreamException;
 
-import org.python.core.PyObject;
-import org.python.core.PyString;
-import org.python.util.PythonInterpreter;
-
-
-import annotation.Annotator;
-import annotation.SimpleAnnotator;
-
-import classification.SimpleClassifier;
-import evaluation.EvalClassification;
-import evaluation.Validation;
-
 import retrieval.IndriMakeQuery;
 import retrieval.LMDirichlet;
 import type.Annotation;
-import type.GeneOntology;
-import type.IndriResult;
 import type.Query;
 import type.ScorePR;
 import type.Sentence;
@@ -55,6 +30,11 @@ import utility.Mapping;
 import utility.Parser;
 import utility.PlatformDetection;
 import utility.PsgToSentXML;
+import annotation.Annotator;
+import annotation.SimpleAnnotator;
+import classification.SimpleClassifier;
+import evaluation.EvalClassification;
+import evaluation.Validation;
 
 
 public class GoTaskMain_DC {
