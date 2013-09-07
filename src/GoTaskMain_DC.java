@@ -76,6 +76,7 @@ public class GoTaskMain_DC {
 	 */
 
 	public static void initialize(String mode) throws IOException {
+		System.out.println(dataPath+" "+dataPath.indexOf("/"));
 		workingsetPath = dataPath.substring(0,dataPath.indexOf("/")) + "/workingset.txt";
 		triplePath = dataPath.substring(0,dataPath.indexOf("/")) + "/triples.unique";
 		geneslimPath = dataPath.substring(0,dataPath.indexOf("/")) + "/GeneID.2GOSLIM";
