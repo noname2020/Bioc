@@ -472,7 +472,7 @@ public class GoTaskMain_DC {
 	{			
 		String mode = "annot";//args[0]; //"test";
 
-		if(args.length>2){
+		if(args.length>3){
 			mode = args[0];
 			dataPath = args[1];
 			inputDir = args[2];
