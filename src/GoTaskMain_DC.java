@@ -381,7 +381,7 @@ public class GoTaskMain_DC {
 		String paramPath = dataPath + "queries/" + pmid + ".param";
 		String resultPath = dataPath + "results/" + pmid + ".result";
 
-		retrieve(queries, paramPath, resultPath, false);
+		retrieve(queries, paramPath, resultPath, true);
 		//System.exit(0);
 		//annotate(queries, resultPath, annotator, pmid);
 
