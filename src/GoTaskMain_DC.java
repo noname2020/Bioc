@@ -274,10 +274,11 @@ public class GoTaskMain_DC {
 		HashSet<String> signatureSet = new HashSet<String>();
 		int n = 1;
 		while ((line = reader.readLine()) != null) {
-			items = line.split("\\|\\|");
+			//items = line.split("\\|\\|");
+			items = line.split("\\t\\t");
 			geneId = items[1];
 			//goId = items[2];
-			sentence = items[3];
+			sentence = items[2];
 			signature = geneId + " " + sentence;
 
 			if (signatureSet.contains(signature)) continue;
