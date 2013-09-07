@@ -275,7 +275,7 @@ public class GoTaskMain_DC {
 		int n = 1;
 		while ((line = reader.readLine()) != null) {
 			//items = line.split("\\|\\|");
-			items = line.split("\\t\\t");
+			items = line.split("\\t");
 			geneId = items[1];
 			//goId = items[2];
 			sentence = items[2];
