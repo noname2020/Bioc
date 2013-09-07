@@ -77,10 +77,14 @@ public class GoTaskMain_DC {
 
 	public static void initialize(String mode) throws IOException {
 		System.out.println(dataPath+" "+dataPath.indexOf("/"));
-		workingsetPath = dataPath.substring(0,dataPath.indexOf("/")) + "/workingset.txt";
-		triplePath = dataPath.substring(0,dataPath.indexOf("/")) + "/triples.unique";
-		geneslimPath = dataPath.substring(0,dataPath.indexOf("/")) + "/GeneID.2GOSLIM";
-		slimpmidPath = dataPath.substring(0,dataPath.indexOf("/")) + "/slimpmid.txt";
+		workingsetPath = "data/workingset.txt";
+		triplePath = "data//triples.unique";
+		geneslimPath = "data/GeneID.2GOSLIM";
+		slimpmidPath = "data/slimpmid.txt";
+		//workingsetPath = dataPath.substring(0,dataPath.indexOf("/")) + "/workingset.txt";
+		//triplePath = dataPath.substring(0,dataPath.indexOf("/")) + "/triples.unique";
+		//geneslimPath = dataPath.substring(0,dataPath.indexOf("/")) + "/GeneID.2GOSLIM";
+		//slimpmidPath = dataPath.substring(0,dataPath.indexOf("/")) + "/slimpmid.txt";
 		//gold1aOutPath = dataPath.substring(0,dataPath.indexOf("/")) +"/goldtask1";
 		gold1aOutPath = dataPath +"/" +inputDir;
 		if (!mode.equals("train")) {
@@ -265,6 +269,10 @@ public class GoTaskMain_DC {
 		String goldOut = gold1aOutPath +"/" + pmid + ".txt";
 		HashMap<String, String> pmidToLines = new HashMap<String, String>();
 		String line, geneId, goId, sentence;
+		File goldOutFile = new File(goldOut);
+		if(!goldOutFile.exists()){
+			return;
+		}
 		BufferedReader reader = new BufferedReader(new FileReader(goldOut));
 		Query query;
 		String[] items;
@@ -471,7 +479,7 @@ public class GoTaskMain_DC {
 
 	public static void main(String[] args) throws IOException, XMLStreamException
 	{			
-		String mode = "annot";//args[0]; //"test";
+		String mode="";//args[0]; //"test";
 
 		if(args.length>3){
 			mode = args[0];
