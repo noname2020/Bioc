@@ -82,7 +82,7 @@ public class GoTaskMain_DC {
 		geneslimPath = dataPath.substring(0,dataPath.indexOf("/")) + "/GeneID.2GOSLIM";
 		slimpmidPath = dataPath.substring(0,dataPath.indexOf("/")) + "/slimpmid.txt";
 		//gold1aOutPath = dataPath.substring(0,dataPath.indexOf("/")) +"/goldtask1";
-		gold1aOutPath = dataPath.substring(0,dataPath.indexOf("/")) +"/" +inputDir;
+		gold1aOutPath = dataPath +"/" +inputDir;
 		if (!mode.equals("train")) {
 			pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
 			workingset = Parser.getSameWorkingset(workingsetPath);
