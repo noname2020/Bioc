@@ -41,6 +41,7 @@ public class GoTaskMain_DC {
 	//private static String dataPath = System.getProperty("user.dir") + "/data/";
 	private static int runId = 1;
 	private static String dataPath =  "/Users/m048100/Dropbox/Bioc/data/";
+	private static String inputDir;
 	private static String modePath;
 	private static String workingsetPath;
 	private static String triplePath;
@@ -79,7 +80,8 @@ public class GoTaskMain_DC {
 		triplePath = dataPath.substring(0,dataPath.indexOf("/")) + "/triples.unique";
 		geneslimPath = dataPath.substring(0,dataPath.indexOf("/")) + "/GeneID.2GOSLIM";
 		slimpmidPath = dataPath.substring(0,dataPath.indexOf("/")) + "/slimpmid.txt";
-		gold1aOutPath = dataPath.substring(0,dataPath.indexOf("/")) +"/goldtask1";
+		//gold1aOutPath = dataPath.substring(0,dataPath.indexOf("/")) +"/goldtask1";
+		gold1aOutPath = dataPath.substring(0,dataPath.indexOf("/")) +"/" +inputDir;
 		if (!mode.equals("train")) {
 			pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
 			workingset = Parser.getSameWorkingset(workingsetPath);
@@ -258,7 +260,8 @@ public class GoTaskMain_DC {
 	}
 
 	public static void readFromClassification(String pmid, ArrayList<Query> queries) throws IOException {
-		String goldOut = gold1aOutPath +"/" + pmid + ".txt";	
+		//String goldOut = gold1aOutPath +"/" + pmid + ".txt";
+		String goldOut = gold1aOutPath +"/" + pmid + ".txt";
 		HashMap<String, String> pmidToLines = new HashMap<String, String>();
 		String line, geneId, goId, sentence;
 		BufferedReader reader = new BufferedReader(new FileReader(goldOut));
@@ -471,12 +474,14 @@ public class GoTaskMain_DC {
 		if(args.length>2){
 			mode = args[0];
 			dataPath = args[1];
-			numTopPmid = Integer.parseInt(args[2]);
-			numTopGo = Integer.parseInt(args[3]);
-			runId = Integer.parseInt(args[4]);
-		}else if(args.length==2){
+			inputDir = args[2];
+			numTopPmid = Integer.parseInt(args[3]);
+			numTopGo = Integer.parseInt(args[4]);
+			runId = Integer.parseInt(args[5]);
+		}else if(args.length==3){
 			mode = args[0];
 			dataPath = args[1];
+			inputDir = args[2];
 			modePath = "";
 		}
 
@@ -507,7 +512,7 @@ public class GoTaskMain_DC {
 				runTrain(pmid);
 				System.out.println();
 			} else { //here, mode must be annot
-				if(args.length==2){ //repeat the if condition, but we need to do different things.
+				if(args.length==3){ //repeat the if condition, but we need to do different things.
 					for(int i=1;i<=20;i++){
 						numTopPmid = i;
 						for(int j=5;j<=50;j++){
