@@ -42,7 +42,7 @@ public class GoTaskMain_DC {
 	private static int runId = 1;
 	private static String dataPath =  "/Users/m048100/Dropbox/Bioc/data/";
 	private static String inputDir;
-	private static String modePath;
+	private static String modePath = "";
 	private static String workingsetPath;
 	private static String triplePath;
 	private static String geneslimPath;
@@ -497,7 +497,7 @@ public class GoTaskMain_DC {
 		String articlePath, pmid;
 		String[] parts, items;
 		//File articleDir = new File(dataPath + "/bc4go_dev_v081213/articles/");
-		File articleDir = new File(dataPath +"/" + modePath+"/articles/");
+		File articleDir = new File(dataPath + "/articles/");
 		for (File articleFile : articleDir.listFiles()) {
 			articlePath = articleFile.getPath();
 			parts = articlePath.split("/");
