@@ -167,8 +167,8 @@ public class GoTaskMain_DC {
 		IndriMakeQuery qlmodel = new LMDirichlet(50, 500, queries);
 
 		if (runId == 1) {
-			qlmodel.addIndex("../index/pmc-stemming/");
-			qlmodel.addIndex("../index/bioasq_train_indri/");
+			qlmodel.addIndex("/data5/bsi/nlp/s110067.sharp/BioCreative/index/pmc-stemming/");
+			qlmodel.addIndex("/data5/bsi/nlp/s110067.sharp/BioCreative/index/bioasq_train_indri/");
 		} else if (runId == 2) {
 			
 			qlmodel.addIndex("../index/generif.index");
