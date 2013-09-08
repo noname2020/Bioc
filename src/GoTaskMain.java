@@ -59,6 +59,7 @@ public class GoTaskMain {
 	private static String triplePath;// = dataPath + "triples.unique";
 	private static String geneslimPath;// = dataPath + "GeneID.2GOSLIM";
 	private static String slimpmidPath;// = dataPath + "slimpmid.txt";
+	private static String articleFolder;
 	
 	private static HashSet<String> workingset;
 	private static HashMap<String, ArrayList<Triple>> pmidToTriples;
@@ -267,7 +268,7 @@ public class GoTaskMain {
 	}
 	
 	public static void readFromClassification(String pmid, ArrayList<Query> queries) throws IOException {
-		String goldOut = dataPath + "goldtask1/" + pmid + ".txt";
+		String goldOut = inputFromTask1 + pmid + ".txt";
 		HashMap<String, String> pmidToLines = new HashMap<String, String>();
 		String line, geneId, goId, sentence;
 		BufferedReader reader = new BufferedReader(new FileReader(goldOut));
@@ -343,7 +344,7 @@ public class GoTaskMain {
 	public static void runTest(String pmid) throws IOException, XMLStreamException {
 		// Split and output XML files that contains sentences
 		ArrayList<Query> queries = new ArrayList<Query>();
-		String inXML = dataPath + "articles/" + pmid + ".xml";
+		String inXML = articleFolder + pmid + ".xml";
 		String outXML = dataPath + "articles_sent/" + pmid + ".xml";
 		//System.out.println("inXML: "+inXML + " outXML:"+outXML);
 		if (! checkExistence(outXML)) {
@@ -490,7 +491,11 @@ public class GoTaskMain {
 		geneslimPath = dataPath + "GeneID.2GOSLIM";
 		slimpmidPath = dataPath + "slimpmid.txt";
 		
-		inputFromTask1 = dataPath + "goldtask1/";
+		
+		
+		articleFolder = dataPath + "testarticles/";
+		//inputFromTask1 = dataPath + "goldtask1/";
+		inputFromTask1 = dataPath + "hongfangtask1/";
 		
 		System.out.println(mode);
 		//System.exit(0);
@@ -502,7 +507,7 @@ public class GoTaskMain {
 		
 		String articlePath, pmid;
 		String[] parts, items;
-		File articleDir = new File(dataPath + "articles/");	
+		File articleDir = new File(articleFolder);	
 		for (File articleFile : articleDir.listFiles()) {
 			articlePath = articleFile.getPath();
 			parts = articlePath.split("/");
