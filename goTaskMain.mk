@@ -24,7 +24,7 @@ else
   VERSION=$(MEDTAGGER_VERSION)
   DISTNAME=MedTagger-$(VERSION)
 endif
-
+### it is found 189 genes --> taska ---> 152 genes. There are 37 missing genes in our work. So Hongfang uses some ways to add them. Then, we have to rerun those 37 then.
 ### note: the model file name is changed to MedTagger_model_third
 all: class link-resources
 	$(JAVAC) $(JAVAC_FLAGS) `find src -name '*.java'`
