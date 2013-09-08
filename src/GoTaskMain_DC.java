@@ -40,7 +40,7 @@ import evaluation.Validation;
 public class GoTaskMain_DC {
 	//private static String dataPath = System.getProperty("user.dir") + "/data/";
 	private static int runId = 1;
-	private static String dataPath =  "/Users/m048100/Dropbox/Bioc/data/";
+	private static String dataPath;
 	private static String inputDir;
 	private static String modePath = "";
 	private static String workingsetPath;
