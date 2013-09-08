@@ -54,11 +54,11 @@ import utility.PsgToSentXML;
 
 
 public class GoTaskMain {
-	private static String dataPath = System.getProperty("user.dir") + "/data/";
-	private static String workingsetPath = dataPath + "workingset.txt";
-	private static String triplePath = dataPath + "triples.unique";
-	private static String geneslimPath = dataPath + "GeneID.2GOSLIM";
-	private static String slimpmidPath = dataPath + "slimpmid.txt";
+	private static String dataPath;// = System.getProperty("user.dir") + "/data/";
+	private static String workingsetPath;// = dataPath + "workingset.txt";
+	private static String triplePath;// = dataPath + "triples.unique";
+	private static String geneslimPath;// = dataPath + "GeneID.2GOSLIM";
+	private static String slimpmidPath;// = dataPath + "slimpmid.txt";
 	
 	private static HashSet<String> workingset;
 	private static HashMap<String, ArrayList<Triple>> pmidToTriples;
@@ -72,6 +72,7 @@ public class GoTaskMain {
 	private static int numTopPmid = 20;
 	private static int numTopGo = 5;
 	private static int runId;
+	private static String inputFromTask1 = "";
 	
 	private static Pattern pattern = Pattern.compile(".*\\((\\d+)\\)");
 	private static Pattern patternMultiple = Pattern.compile(".*\\(([\\d;]+)\\)");
@@ -89,12 +90,15 @@ public class GoTaskMain {
 	
 	public static void initialize(String mode) throws IOException {
 		if (!mode.equals("train")) {
-			pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
-			workingset = Parser.getSameWorkingset(workingsetPath);
+			//pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
+			pmidToTriples = null;
+			workingset = null;
+			slimToGopmids = null;
+			//workingset = Parser.getSameWorkingset(workingsetPath);
 			classifier = new SimpleClassifier();
 			annotator = new SimpleAnnotator();
 			annotator.setPmidToTriples(pmidToTriples);
-			slimToGopmids = Mapping.getSlimToGopmids(slimpmidPath);
+			//slimToGopmids = Mapping.getSlimToGopmids(slimpmidPath);
 			Parser.printInfo(false);
 			annotator.printInfo(false);
 			Validation.printInfo(false);
@@ -165,10 +169,10 @@ public class GoTaskMain {
 	public static void retrieve(Collection<Query> queries, String paramPath, String resultPath, boolean rewrite) throws IOException {
 		printInfo("Formulating queries ");
 		IndriMakeQuery qlmodel = new LMDirichlet(50, 500, queries);
-		if (runId == 2) qlmodel.addIndex("../index/generif.index/");
+		if (runId == 2) qlmodel.addIndex("/home/zhu/index/generif.index/");
 		else {
-			qlmodel.addIndex("../index/pmc-stemming/");
-			qlmodel.addIndex("../index/bioasq_train_indri/");
+			qlmodel.addIndex("/home/zhu/index/pmc-stemming/");
+			qlmodel.addIndex("/home/zhu/index/bioasq_train_indri/");
 		}
 		//qlmodel.addIndex("~/index/pmc-stemming/");
 		//qlmodel.addIndex("~/index/bioasq_train_indri/");
@@ -292,13 +296,17 @@ public class GoTaskMain {
 			queries.add(query);
 			n++;
 		}
-		
-		geneToGopmids = Mapping.makeGeneToPmids(identifiedGeneSet, slimToGopmids, geneslimPath);
+		geneToGopmids = null;
+		//geneToGopmids = Mapping.makeGeneToPmids(identifiedGeneSet, slimToGopmids, geneslimPath);
 		
 		for (int i = 0; i < queries.size(); i++) {
 			query = queries.get(i);
 			geneId = query.getGene();
 			//System.out.println(geneId);
+			if (runId == 2) {
+				query.setWorkingset(null);
+				continue;
+			}
 			if ( !geneToGopmids.containsKey(query.getGene()) ) {
 				query.setWorkingset(workingset);
 			} else {
@@ -315,6 +323,7 @@ public class GoTaskMain {
 //			System.out.println(key + " " + geneToGopmids.get(key));
 //		}
 //		System.exit(0);
+		reader.close();
 	}
 	
 	public static ArrayList<ScorePR> evalRanking(ArrayList<Query> queries, String goldPath) {
@@ -361,7 +370,7 @@ public class GoTaskMain {
 	    String paramPath = dataPath + "queries/" + pmid + ".param";
 	    String resultPath = dataPath + "results/" + pmid + ".result";
 
-		retrieve(queries, paramPath, resultPath, false);
+		retrieve(queries, paramPath, resultPath, true);
 		//System.exit(0);
 		//annotate(queries, resultPath, annotator, pmid);
 
@@ -470,11 +479,18 @@ public class GoTaskMain {
 		
 		
 
-		String mode = "annot";//args[0]; //"test";
+		String mode = "test";//args[0]; //"test";
 		numTopPmid = 10;
 		numTopGo = 1;
 		runId = 2;
 		
+		dataPath = System.getProperty("user.dir") + "/data/";
+		workingsetPath = dataPath + "workingset.txt";
+		triplePath = dataPath + "triples.unique";
+		geneslimPath = dataPath + "GeneID.2GOSLIM";
+		slimpmidPath = dataPath + "slimpmid.txt";
+		
+		inputFromTask1 = dataPath + "goldtask1/";
 		
 		System.out.println(mode);
 		//System.exit(0);
