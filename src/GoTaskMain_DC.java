@@ -506,6 +506,7 @@ public class GoTaskMain_DC {
 		String articlePath, pmid;
 		String[] parts, items;
 		//File articleDir = new File(dataPath + "/bc4go_dev_v081213/articles/");
+		System.out.println("dataPath: "+dataPath);
 		File articleDir = new File(dataPath + "/articles/");
 		for (File articleFile : articleDir.listFiles()) {
 			articlePath = articleFile.getPath();
