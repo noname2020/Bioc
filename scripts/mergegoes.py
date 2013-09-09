@@ -15,13 +15,16 @@ for line in f:
 	geneNgo.append((gene, go))
 f.close()
 
+# pmid: [gene, go]
+# gene : [go]
+# go : count
 for pmid in pmidToResults:
 	geneNgo = pmidToResults[pmid]
 	geneToGoes = {}
 	for gene, go in geneNgo:
 		goes = geneToGoes.setdefault(gene, [])
 		goes.append(go)
-	for gene in 	geneToGoes:
+	for gene in geneToGoes:
 		goes = geneToGoes[gene]
 		goToCount = {}
 		for go in goes:
@@ -39,7 +42,7 @@ for pmid in pmidToResults:
 		for count, go in countGo:
 			if count < threshold and printed:
 				#print pmid, gene, go, count, 'break'
-				print pmid, gene, go
+				#print pmid, gene, go
 				#continue
 				break
 			print pmid, gene, go
