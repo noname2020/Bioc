@@ -510,7 +510,7 @@ public class GoTaskMain_DC {
 				if(args.length==2){ //repeat the if condition, but we need to do different things.
 					for(int i=1;i<=20;i++){
 						numTopPmid = i;
-						for(int j=5;j<=50;j++){
+						for(int j=5;j<=150;j+=5){
 							numTopGo = j;
 							annotate(pmid); //in this case, we will do i * j times annotate
 						}
