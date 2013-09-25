@@ -40,8 +40,9 @@ import evaluation.Validation;
 public class GoTaskMain_DC {
 	//private static String dataPath = System.getProperty("user.dir") + "/data/";
 	private static int runId = 1;
-	private static String dataPath =  "/Users/m048100/Dropbox/Bioc/data/";
-	private static String modePath;
+	private static String dataPath;
+	private static String inputDir;
+	private static String modePath = "";
 	private static String workingsetPath;
 	private static String triplePath;
 	private static String geneslimPath;
@@ -75,11 +76,17 @@ public class GoTaskMain_DC {
 	 */
 
 	public static void initialize(String mode) throws IOException {
-		workingsetPath = dataPath.substring(0,dataPath.indexOf("/")) + "/workingset.txt";
-		triplePath = dataPath.substring(0,dataPath.indexOf("/")) + "/triples.unique";
-		geneslimPath = dataPath.substring(0,dataPath.indexOf("/")) + "/GeneID.2GOSLIM";
-		slimpmidPath = dataPath.substring(0,dataPath.indexOf("/")) + "/slimpmid.txt";
-		gold1aOutPath = dataPath.substring(0,dataPath.indexOf("/")) +"/goldtask1";
+		System.out.println(dataPath+" "+dataPath.indexOf("/"));
+		workingsetPath = "data/workingset.txt";
+		triplePath = "data//triples.unique";
+		geneslimPath = "data/GeneID.2GOSLIM";
+		slimpmidPath = "data/slimpmid.txt";
+		//workingsetPath = dataPath.substring(0,dataPath.indexOf("/")) + "/workingset.txt";
+		//triplePath = dataPath.substring(0,dataPath.indexOf("/")) + "/triples.unique";
+		//geneslimPath = dataPath.substring(0,dataPath.indexOf("/")) + "/GeneID.2GOSLIM";
+		//slimpmidPath = dataPath.substring(0,dataPath.indexOf("/")) + "/slimpmid.txt";
+		//gold1aOutPath = dataPath.substring(0,dataPath.indexOf("/")) +"/goldtask1";
+		gold1aOutPath = dataPath +"/" +inputDir;
 		if (!mode.equals("train")) {
 			pmidToTriples = Mapping.makePmidToTriples(Parser.getTriples(triplePath));
 			workingset = Parser.getSameWorkingset(workingsetPath);
@@ -160,8 +167,8 @@ public class GoTaskMain_DC {
 		IndriMakeQuery qlmodel = new LMDirichlet(50, 500, queries);
 
 		if (runId == 1) {
-			qlmodel.addIndex("../index/pmc-stemming/");
-			qlmodel.addIndex("../index/bioasq_train_indri/");
+			qlmodel.addIndex("/data5/bsi/nlp/s110067.sharp/BioCreative/index/pmc-stemming/");
+			qlmodel.addIndex("/data5/bsi/nlp/s110067.sharp/BioCreative/index/bioasq_train_indri/");
 		} else if (runId == 2) {
 			
 			qlmodel.addIndex("../index/generif.index");
@@ -258,9 +265,14 @@ public class GoTaskMain_DC {
 	}
 
 	public static void readFromClassification(String pmid, ArrayList<Query> queries) throws IOException {
-		String goldOut = gold1aOutPath +"/" + pmid + ".txt";	
+		//String goldOut = gold1aOutPath +"/" + pmid + ".txt";
+		String goldOut = gold1aOutPath +"/" + pmid + ".txt";
 		HashMap<String, String> pmidToLines = new HashMap<String, String>();
 		String line, geneId, goId, sentence;
+		File goldOutFile = new File(goldOut);
+		if(!goldOutFile.exists()){
+			return;
+		}
 		BufferedReader reader = new BufferedReader(new FileReader(goldOut));
 		Query query;
 		String[] items;
@@ -270,10 +282,11 @@ public class GoTaskMain_DC {
 		HashSet<String> signatureSet = new HashSet<String>();
 		int n = 1;
 		while ((line = reader.readLine()) != null) {
-			items = line.split("\\|\\|");
+			//items = line.split("\\|\\|");
+			items = line.split("\\t");
 			geneId = items[1];
 			//goId = items[2];
-			sentence = items[3];
+			sentence = items[2];
 			signature = geneId + " " + sentence;
 
 			if (signatureSet.contains(signature)) continue;
@@ -338,8 +351,8 @@ public class GoTaskMain_DC {
 		//String outXML = System.getProperty("user.dir") + "/data/articles_sent/" + pmid + ".xml";
 		//String inXML = dataPath + "/bc4go_dev_v081213/articles/" + pmid + ".xml";
 		//String outXML = dataPath + "/bc4go_dev_v081213/articles_sent/" + pmid + ".xml";
-		String inXML = dataPath +"/" + modePath +"articles/" + pmid + ".xml";
-		String outXML = dataPath +"/" + modePath+"/articles_sent/" + pmid + ".xml";
+		String inXML = dataPath +"/" + modePath +"articles_missingGenes/" + pmid + ".xml";
+		String outXML = dataPath +"/" + modePath+"/articles_sent_missingGenes/" + pmid + ".xml";
 		//String inXML = dataPath + "articles/" + pmid + ".xml";
 		//String outXML = dataPath + "articles_sent/" + pmid + ".xml";
 		//>>>>>>> branch 'master' of https://github.com/noname2020/Bioc.git
@@ -368,7 +381,7 @@ public class GoTaskMain_DC {
 		String paramPath = dataPath + "queries/" + pmid + ".param";
 		String resultPath = dataPath + "results/" + pmid + ".result";
 
-		retrieve(queries, paramPath, resultPath, false);
+		retrieve(queries, paramPath, resultPath, true);
 		//System.exit(0);
 		//annotate(queries, resultPath, annotator, pmid);
 
@@ -466,17 +479,19 @@ public class GoTaskMain_DC {
 
 	public static void main(String[] args) throws IOException, XMLStreamException
 	{			
-		String mode = "annot";//args[0]; //"test";
+		String mode="";//args[0]; //"test";
 
-		if(args.length>2){
+		if(args.length>3){
 			mode = args[0];
 			dataPath = args[1];
-			numTopPmid = Integer.parseInt(args[2]);
-			numTopGo = Integer.parseInt(args[3]);
-			runId = Integer.parseInt(args[4]);
-		}else if(args.length==2){
+			inputDir = args[2];
+			numTopPmid = Integer.parseInt(args[3]);
+			numTopGo = Integer.parseInt(args[4]);
+			runId = Integer.parseInt(args[5]);
+		}else if(args.length==3){
 			mode = args[0];
 			dataPath = args[1];
+			inputDir = args[2];
 			modePath = "";
 		}
 
@@ -491,7 +506,8 @@ public class GoTaskMain_DC {
 		String articlePath, pmid;
 		String[] parts, items;
 		//File articleDir = new File(dataPath + "/bc4go_dev_v081213/articles/");
-		File articleDir = new File(dataPath +"/" + modePath+"/articles/");
+		System.out.println("dataPath: "+dataPath);
+		File articleDir = new File(dataPath + "/articles_missingGenes/");
 		for (File articleFile : articleDir.listFiles()) {
 			articlePath = articleFile.getPath();
 			parts = articlePath.split("/");
@@ -507,7 +523,7 @@ public class GoTaskMain_DC {
 				runTrain(pmid);
 				System.out.println();
 			} else { //here, mode must be annot
-				if(args.length==2){ //repeat the if condition, but we need to do different things.
+				if(args.length==3){ //repeat the if condition, but we need to do different things.
 					for(int i=1;i<=20;i++){
 						numTopPmid = i;
 						for(int j=5;j<=150;j+=5){
