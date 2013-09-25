@@ -34,7 +34,7 @@ all: class link-resources
 #	$(JAVA) -Xmx20g -Xms20g $(JAVA_FLAGS) GoTaskMain_DC annot	data/bc4go_test_v090313/ MayoTask4_2_task1b_0.1.corrected.run3 7 10 1
 #	$(JAVA) -Xmx20g -Xms20g $(JAVA_FLAGS) GoTaskMain_DC annot	data/bc4go_test_v090313/ goldtask1_0.01/ 7 10 1
 #	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain_DC test	data/
-	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain_DC annot	data/
+	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain_DC annot	data/ goldtask1
 #	$(JAVA) -Xmx2g -Xms2g $(JAVA_FLAGS) GoTaskMain train
 #	 
 #///Users/m048100/Documents/i2b2/i2b2Challenge2010/Data/release3_merged/ldaModels/i2b22010_txt.uniNorm_eventStr-final_alpha=0.25_beta=0.1_k=100.phi
