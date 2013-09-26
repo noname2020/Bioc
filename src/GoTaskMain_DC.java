@@ -349,10 +349,10 @@ public class GoTaskMain_DC {
 		//<<<<<<< HEAD
 		//String inXML = System.getProperty("user.dir") + "/data/articles/" + pmid + ".xml";
 		//String outXML = System.getProperty("user.dir") + "/data/articles_sent/" + pmid + ".xml";
-		//String inXML = dataPath + "/bc4go_dev_v081213/articles/" + pmid + ".xml";
-		//String outXML = dataPath + "/bc4go_dev_v081213/articles_sent/" + pmid + ".xml";
-		String inXML = dataPath +"/" + modePath +"articles_missingGenes/" + pmid + ".xml";
-		String outXML = dataPath +"/" + modePath+"/articles_sent_missingGenes/" + pmid + ".xml";
+		String inXML = dataPath + "/bc4go_dev_v081213/articles/" + pmid + ".xml";
+		String outXML = dataPath + "/bc4go_dev_v081213/articles_sent/" + pmid + ".xml";
+		//String inXML = dataPath +"/" + modePath +"articles_missingGenes/" + pmid + ".xml";
+		//String outXML = dataPath +"/" + modePath+"/articles_sent_missingGenes/" + pmid + ".xml";
 		//String inXML = dataPath + "articles/" + pmid + ".xml";
 		//String outXML = dataPath + "articles_sent/" + pmid + ".xml";
 		//>>>>>>> branch 'master' of https://github.com/noname2020/Bioc.git
